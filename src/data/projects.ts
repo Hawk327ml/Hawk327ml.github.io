@@ -11,6 +11,26 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: "01",
+    title: "FocusSpace — 3D Study Room",
+    tagline:
+      "React Three Fiber 互动书房：点击物件切换专注模式 / 日夜灯光 / Pomodoro。",
+    stack: ["React", "R3F", "Three.js", "DaisyUI"],
+    repo: "https://github.com/Hawk327ml/focusspace-3d",
+    live: "https://focusspace-3d.web.app",
+    accent: "#3B82F6",
+  },
+  {
+    id: "02",
+    title: "Luna Dining — 3D Reservation",
+    tagline:
+      "3D 餐厅选桌预订：桌况着色、表单校验、localStorage 持久化演示。",
+    stack: ["React", "R3F", "Three.js", "Vite"],
+    repo: "https://github.com/Hawk327ml/luna-dining-3d",
+    live: "https://luna-dining-3d.web.app",
+    accent: "#1F6B58",
+  },
+  {
+    id: "03",
     title: "Rosemary Care Notebook",
     tagline:
       "CSM3401 产品档案站：护理叙事 + 手绘插画，Firebase Hosting 已上线。",
@@ -20,7 +40,7 @@ export const projects: Project[] = [
     accent: "#C8F542",
   },
   {
-    id: "02",
+    id: "04",
     title: "AAPL Stock Prediction",
     tagline:
       "CSM3601 Group13：次日 Adj Close 回归（Ridge）。对外指标以 Notebook 为准：2024 test MAE 2.12 / RMSE 2.88 / R² 0.987。附海报与 Demo 链接（网页源码未收录）。",
@@ -30,16 +50,16 @@ export const projects: Project[] = [
     accent: "#5CE1E6",
   },
   {
-    id: "03",
+    id: "05",
     title: "Tempe Traffic Crash EDA",
     tagline:
       "CSM3601：Tempe 交通事故公开数据清洗、EDA 与特征工程（Data.gov）。",
     stack: ["Python", "pandas", "EDA"],
-    repo: "https://github.com/Hawk327ml/Tempe-Traffic-Crash-EDA",
+    repo: "https://github.com/Hawk327ml/Traffic-Accident-Data-Analysis",
     accent: "#7DD3FC",
   },
   {
-    id: "04",
+    id: "06",
     title: "WeChat Attendance Automation",
     tagline:
       "企业微信考勤月报自动化：请假 / 异常 / 全勤报表（隐私输出未公开）。",
@@ -48,7 +68,7 @@ export const projects: Project[] = [
     accent: "#FF8A3D",
   },
   {
-    id: "05",
+    id: "07",
     title: "Esports Team Management",
     tagline: "JavaFX + MySQL：队员、合同与赛事结果管理桌面应用。",
     stack: ["Java", "JavaFX", "MySQL"],

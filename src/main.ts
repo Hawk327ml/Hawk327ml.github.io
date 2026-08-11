@@ -42,7 +42,7 @@ app.innerHTML = `
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">PROJECTS</h2>
         <p class="section-desc">
-          五个公开作品：Rosemary 产品站、AAPL 预测、Tempe 交通事故 EDA、企微考勤自动化、电竞管理桌面端。
+          多媒体 3D Web（FocusSpace / Luna Dining）、Rosemary 产品站、AAPL 预测、Tempe 交通事故 EDA、企微考勤自动化、电竞管理桌面端。
         </p>
       </div>
       <div class="projects">
@@ -84,7 +84,7 @@ app.innerHTML = `
         <p>
           我是 <strong>${profile.brand}</strong>（${profile.handle}），就读于
           University Putra Malaysia，专业方向为计算机科学（多媒体计算）。
-          作品集侧重「可演示、可部署、可复现」——从 Firebase 站点到 Python 数据流水线。
+          作品集侧重「可演示、可部署、可复现」——从 React Three Fiber 3D 站到 Firebase 产品页与 Python 数据流水线。
         </p>
         <p class="about-note">
           仓库持续迭代中。若某个项目 README 仍较薄，以本页摘要 + GitHub 最新提交为准。
