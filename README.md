@@ -27,8 +27,8 @@ Push to `main` on `Hawk327ml/Hawk327ml.github.io`. GitHub Actions builds and pub
 
 | Project | Links |
 |---------|-------|
-| FocusSpace — 3D Study Room | [Live](https://focusspace-3d.web.app) · [Repo](https://github.com/Hawk327ml/focusspace-3d) |
-| Luna Dining — 3D Reservation | [Live](https://luna-dining-3d.web.app) · [Repo](https://github.com/Hawk327ml/luna-dining-3d) |
+| FocusSpace — 3D Study Room | [Live](https://hawk327ml.github.io/focusspace-3d/) · [Repo](https://github.com/Hawk327ml/focusspace-3d) |
+| Luna Dining — 3D Reservation | [Live](https://hawk327ml.github.io/luna-dining-3d/) · [Repo](https://github.com/Hawk327ml/luna-dining-3d) |
 | Rosemary Care Notebook | [Live](https://rosemary-care-notebook.web.app) · [Repo](https://github.com/Hawk327ml/Build-rosemary-profile-site) |
 | AAPL Stock Prediction | [Live](https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/) · [Repo](https://github.com/Hawk327ml/AAPL-Stock-Prediction) |
 | Traffic Accident Data Analysis | [Repo](https://github.com/Hawk327ml/Traffic-Accident-Data-Analysis) |

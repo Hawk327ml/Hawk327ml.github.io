@@ -14,6 +14,8 @@ app.innerHTML = `
     <nav aria-label="Primary">
       <a href="#work">Work</a>
       &nbsp;&nbsp;
+      <a href="/play/">Play</a>
+      &nbsp;&nbsp;
       <a href="#about">About</a>
       &nbsp;&nbsp;
       <a href="${profile.github}" target="_blank" rel="noreferrer">GitHub</a>
@@ -32,8 +34,8 @@ app.innerHTML = `
         <span>@${profile.handle}</span>
       </div>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#work">查看作品</a>
-        <a class="btn btn-ghost" href="${profile.github}" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn btn-primary" href="/play/">试玩 Orb Courier</a>
+        <a class="btn btn-ghost" href="#work">查看作品</a>
       </div>
     </section>
 
@@ -42,7 +44,7 @@ app.innerHTML = `
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">PROJECTS</h2>
         <p class="section-desc">
-          多媒体 3D Web（FocusSpace / Luna Dining）、Rosemary 产品站、AAPL 预测、Tempe 交通事故 EDA、企微考勤自动化、电竞管理桌面端。
+          Orb Courier 小星球 demo、多媒体 3D Web（FocusSpace / Luna Dining）、Rosemary 产品站、AAPL 预测、Tempe 交通事故 EDA、企微考勤自动化、电竞管理桌面端。
         </p>
       </div>
       <div class="projects">
@@ -54,7 +56,7 @@ app.innerHTML = `
             <div class="project-body">
               <div class="project-copy">
                 <h3 class="project-title">
-                  <a href="${p.live ?? p.repo}" target="_blank" rel="noreferrer">${p.title}</a>
+                  <a href="${p.live ?? p.repo}" ${p.live?.startsWith("http") || !p.live ? 'target="_blank" rel="noreferrer"' : ""}>${p.title}</a>
                 </h3>
                 <p class="project-tagline">${p.tagline}</p>
                 <ul class="project-stack">

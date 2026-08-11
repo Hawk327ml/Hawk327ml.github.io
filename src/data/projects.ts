@@ -11,13 +11,24 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    id: "00",
+    title: "Orb Courier — Mini Planet Demo",
+    tagline:
+      "Messenger 气质简化版：小星球曲面移动、拾取/配送 2 单，30 秒可玩。Vanilla Three.js。",
+    stack: ["Three.js", "Vite", "TypeScript"],
+    repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
+    live: "/play/",
+    accent: "#FF6B3D",
+    image: "/thumbs/orb-courier.svg",
+  },
+  {
     id: "01",
     title: "FocusSpace — 3D Study Room",
     tagline:
       "React Three Fiber 互动书房：点击物件切换专注模式 / 日夜灯光 / Pomodoro。",
     stack: ["React", "R3F", "Three.js", "DaisyUI"],
     repo: "https://github.com/Hawk327ml/focusspace-3d",
-    live: "https://focusspace-3d.web.app",
+    live: "https://hawk327ml.github.io/focusspace-3d/",
     accent: "#3B82F6",
     image: "/thumbs/focusspace.png",
   },
@@ -28,7 +39,7 @@ export const projects: Project[] = [
       "3D 餐厅选桌预订：桌况着色、表单校验、localStorage 持久化演示。",
     stack: ["React", "R3F", "Three.js", "Vite"],
     repo: "https://github.com/Hawk327ml/luna-dining-3d",
-    live: "https://luna-dining-3d.web.app",
+    live: "https://hawk327ml.github.io/luna-dining-3d/",
     accent: "#1F6B58",
     image: "/thumbs/luna.png",
   },
