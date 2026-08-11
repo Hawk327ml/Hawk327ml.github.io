@@ -6,6 +6,7 @@ export type Project = {
   repo: string;
   live?: string;
   accent: string;
+  image: string;
 };
 
 export const projects: Project[] = [
@@ -18,6 +19,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/focusspace-3d",
     live: "https://focusspace-3d.web.app",
     accent: "#3B82F6",
+    image: "/thumbs/focusspace.png",
   },
   {
     id: "02",
@@ -28,6 +30,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/luna-dining-3d",
     live: "https://luna-dining-3d.web.app",
     accent: "#1F6B58",
+    image: "/thumbs/luna.png",
   },
   {
     id: "03",
@@ -38,6 +41,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/Build-rosemary-profile-site",
     live: "https://rosemary-care-notebook.web.app",
     accent: "#C8F542",
+    image: "/thumbs/rosemary.png",
   },
   {
     id: "04",
@@ -48,6 +52,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/AAPL-Stock-Prediction",
     live: "https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/",
     accent: "#5CE1E6",
+    image: "/thumbs/aapl.png",
   },
   {
     id: "05",
@@ -57,6 +62,7 @@ export const projects: Project[] = [
     stack: ["Python", "pandas", "EDA"],
     repo: "https://github.com/Hawk327ml/Traffic-Accident-Data-Analysis",
     accent: "#7DD3FC",
+    image: "/thumbs/traffic.svg",
   },
   {
     id: "06",
@@ -66,6 +72,7 @@ export const projects: Project[] = [
     stack: ["Python", "Excel", "Desktop GUI"],
     repo: "https://github.com/Hawk327ml/wechat-attendance-converter",
     accent: "#FF8A3D",
+    image: "/thumbs/attendance.svg",
   },
   {
     id: "07",
@@ -74,6 +81,7 @@ export const projects: Project[] = [
     stack: ["Java", "JavaFX", "MySQL"],
     repo: "https://github.com/Hawk327ml/esports-team-management",
     accent: "#F45B69",
+    image: "/thumbs/esports.png",
   },
 ];
 

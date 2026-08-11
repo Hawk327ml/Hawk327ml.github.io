@@ -258,7 +258,7 @@ section {
 
 .project {
   display: grid;
-  grid-template-columns: 4.5rem 1fr auto;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   gap: 1rem 1.5rem;
   align-items: start;
   padding: 1.75rem 0;
@@ -278,6 +278,33 @@ section {
 
 .project:hover {
   background: linear-gradient(90deg, rgba(200, 245, 66, 0.05), transparent 55%);
+}
+
+.project-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 240px);
+  gap: 1rem 1.25rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.project-media {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0a0e0b;
+  aspect-ratio: 16 / 10;
+}
+
+.project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project:hover .project-media img {
+  transform: scale(1.04);
 }
 
 .project-id {
@@ -397,6 +424,15 @@ section {
 @media (max-width: 720px) {
   .project {
     grid-template-columns: 3rem 1fr;
+  }
+
+  .project-body {
+    grid-template-columns: 1fr;
+  }
+
+  .project-media {
+    order: -1;
+    max-width: none;
   }
 
   .project-links {

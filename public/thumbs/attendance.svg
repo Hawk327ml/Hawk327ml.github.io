@@ -1,0 +1,11 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <rect width="1200" height="750" fill="#1A120C"/>
+  <rect x="80" y="120" width="480" height="60" rx="8" fill="#FF8A3D" opacity="0.9"/>
+  <rect x="80" y="220" width="1040" height="18" rx="4" fill="#E8F0E6" opacity="0.25"/>
+  <rect x="80" y="270" width="920" height="18" rx="4" fill="#E8F0E6" opacity="0.18"/>
+  <rect x="80" y="320" width="980" height="18" rx="4" fill="#E8F0E6" opacity="0.18"/>
+  <rect x="80" y="400" width="320" height="200" rx="12" fill="#2A1C14" stroke="#FF8A3D" stroke-width="2"/>
+  <rect x="440" y="400" width="320" height="200" rx="12" fill="#2A1C14" stroke="#FF8A3D" stroke-width="2"/>
+  <rect x="800" y="400" width="320" height="200" rx="12" fill="#2A1C14" stroke="#FF8A3D" stroke-width="2"/>
+  <text x="80" y="90" fill="#E8F0E6" font-family="Arial" font-size="40" font-weight="700">ATTENDANCE AUTOMATION</text>
+</svg>

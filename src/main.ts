@@ -51,14 +51,19 @@ app.innerHTML = `
             (p) => `
           <article class="project" style="--project-accent: ${p.accent}" data-reveal>
             <div class="project-id">${p.id}</div>
-            <div>
-              <h3 class="project-title">
-                <a href="${p.live ?? p.repo}" target="_blank" rel="noreferrer">${p.title}</a>
-              </h3>
-              <p class="project-tagline">${p.tagline}</p>
-              <ul class="project-stack">
-                ${p.stack.map((s) => `<li>${s}</li>`).join("")}
-              </ul>
+            <div class="project-body">
+              <div class="project-copy">
+                <h3 class="project-title">
+                  <a href="${p.live ?? p.repo}" target="_blank" rel="noreferrer">${p.title}</a>
+                </h3>
+                <p class="project-tagline">${p.tagline}</p>
+                <ul class="project-stack">
+                  ${p.stack.map((s) => `<li>${s}</li>`).join("")}
+                </ul>
+              </div>
+              <a class="project-media" href="${p.live ?? p.repo}" target="_blank" rel="noreferrer" aria-label="${p.title} preview">
+                <img src="${p.image}" alt="" loading="lazy" />
+              </a>
             </div>
             <div class="project-links">
               ${
