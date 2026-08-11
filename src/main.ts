@@ -42,7 +42,7 @@ app.innerHTML = `
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">PROJECTS</h2>
         <p class="section-desc">
-          四个公开仓库：产品站、数据分析、考勤工具与电竞管理。点击进入 GitHub 或线上演示。
+          五个公开作品：Rosemary 产品站、AAPL 预测、Tempe 交通事故 EDA、企微考勤自动化、电竞管理桌面端。
         </p>
       </div>
       <div class="projects">
