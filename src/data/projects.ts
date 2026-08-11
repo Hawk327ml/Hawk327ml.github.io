@@ -23,8 +23,8 @@ export const projects: Project[] = [
     id: "02",
     title: "AAPL Stock Prediction",
     tagline:
-      "CSM3601 Group13：次日收盘价回归流水线（EDA → Ridge → 评估），附 Green ML 海报与 Streamlit 演示。",
-    stack: ["Python", "scikit-learn", "Jupyter", "Streamlit"],
+      "CSM3601 Group13：次日 Adj Close 回归（Ridge）。对外指标以 Notebook 为准：2024 test MAE 2.12 / RMSE 2.88 / R² 0.987。附海报与线上 Demo 链接（无源码未收录）。",
+    stack: ["Python", "scikit-learn", "Jupyter"],
     repo: "https://github.com/Hawk327ml/Traffic-Accident-Data-Analysis",
     live: "https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/",
     accent: "#5CE1E6",
