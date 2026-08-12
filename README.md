@@ -40,5 +40,5 @@ Push to `main` on `Hawk327ml/Hawk327ml.github.io`. GitHub Actions publishes to G
 | AAPL Forecast | [Live](https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/) · [Repo](https://github.com/Hawk327ml/AAPL-Stock-Prediction) |
 | PULSEFIELD | [Live](https://Hawk327ml.github.io/pulse/) |
 
-Supporting (Other): Tempe Crash EDA · Attendance Tools · Esports Desk
+Supporting (Other): Focus Portal · Tempe Crash EDA · Attendance Tools · Esports Desk
 
