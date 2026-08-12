@@ -50,6 +50,7 @@ const stickKnobNode = document.querySelector<HTMLDivElement>("#stick-knob");
 const sprintNode = document.querySelector<HTMLButtonElement>("#sprint");
 const restartNode = document.querySelector<HTMLButtonElement>("#restart");
 const bootNode = document.querySelector<HTMLDivElement>("#boot");
+const bootCopyNode = document.querySelector<HTMLParagraphElement>("#boot-copy");
 const hudNode = document.querySelector<HTMLDivElement>("#hud");
 const objectiveNode = document.querySelector<HTMLParagraphElement>("#objective");
 const proximityNode = document.querySelector<HTMLParagraphElement>("#proximity");
@@ -80,6 +81,7 @@ if (
   !sprintNode ||
   !restartNode ||
   !bootNode ||
+  !bootCopyNode ||
   !hudNode ||
   !objectiveNode ||
   !proximityNode ||
@@ -110,6 +112,7 @@ const stickKnobEl = stickKnobNode;
 const sprintBtn = sprintNode;
 const restartBtn = restartNode;
 const bootEl = bootNode;
+const bootCopyEl = bootCopyNode;
 const hudEl = hudNode;
 const objectiveEl = objectiveNode;
 const proximityEl = proximityNode;
@@ -128,12 +131,18 @@ const resultKickerEl = resultKickerNode;
 const resultTitleEl = resultTitleNode;
 const resultModeEl = resultModeNode;
 
-const renderer = new THREE.WebGLRenderer({
-  canvas,
-  antialias: !LEAN,
-  powerPreference: "high-performance",
-  alpha: false,
-});
+let renderer: THREE.WebGLRenderer;
+try {
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: !LEAN,
+    powerPreference: "high-performance",
+    alpha: false,
+  });
+} catch {
+  bootCopyEl.textContent = "WebGL 不可用 · 换浏览器试试";
+  throw new Error("WebGL unavailable");
+}
 renderer.setPixelRatio(pixelBudget());
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -301,7 +310,19 @@ modePickEl.querySelectorAll<HTMLButtonElement>("[data-mode]").forEach((btn) => {
 bindTouch();
 
 const clock = new THREE.Clock();
+finishBoot();
 requestAnimationFrame(tick);
+
+function finishBoot() {
+  if (booted) return;
+  booted = true;
+  bootEl.classList.add("is-done");
+  modePickEl.hidden = false;
+  hudEl.hidden = true;
+  window.setTimeout(() => {
+    if (bootEl.isConnected) bootEl.remove();
+  }, 480);
+}
 
 function tick() {
   requestAnimationFrame(tick);
@@ -344,16 +365,6 @@ function tick() {
   }
 
   renderer.render(scene, camera);
-
-  if (!booted) {
-    booted = true;
-    requestAnimationFrame(() => {
-      bootEl.classList.add("is-done");
-      modePickEl.hidden = false;
-      hudEl.hidden = true;
-      window.setTimeout(() => bootEl.remove(), 480);
-    });
-  }
 }
 
 function selectMode(mode: ModeId) {

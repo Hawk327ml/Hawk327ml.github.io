@@ -18,19 +18,27 @@
     <link rel="canonical" href="https://Hawk327ml.github.io/play/" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Orb Courier · HAWK</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      /* Critical boot styles if CSS chunk is slow */
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #121f2e; }
+      .boot {
+        position: fixed; inset: 0; z-index: 20; display: grid; place-content: center; gap: 0.85rem;
+        background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(255, 107, 61, 0.18), transparent 60%), #152636;
+        color: #f2efe6; font-family: system-ui, sans-serif; transition: opacity 0.45s ease, visibility 0.45s ease;
+      }
+      .boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+      .boot-brand { margin: 0; text-align: center; font-size: clamp(2.2rem, 8vw, 3.4rem); letter-spacing: 0.14em; }
+      .boot-copy { margin: 0; text-align: center; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(242, 239, 230, 0.72); }
+      .boot-bar { width: min(220px, 56vw); height: 3px; margin: 0 auto; overflow: hidden; background: rgba(242, 239, 230, 0.15); }
+      .boot-bar span { display: block; width: 40%; height: 100%; background: #ff6b3d; }
+    </style>
   </head>
   <body>
     <div id="boot" class="boot" aria-live="polite">
       <p class="boot-brand">ORB COURIER</p>
       <div class="boot-bar" aria-hidden="true"><span></span></div>
-      <p class="boot-copy">loading planet…</p>
+      <p class="boot-copy" id="boot-copy">loading planet…</p>
     </div>
 
     <div id="mode-pick" class="mode-pick" hidden>
@@ -114,6 +122,23 @@
     </div>
 
     <canvas id="c"></canvas>
+    <script>
+      // If the module/chunk never boots (slow network / China CDN), surface a recovery path.
+      window.setTimeout(function () {
+        var boot = document.getElementById("boot");
+        var copy = document.getElementById("boot-copy");
+        if (!boot || boot.classList.contains("is-done") || !copy) return;
+        copy.textContent = "加载超时 · 点击此处重试";
+        boot.style.cursor = "pointer";
+        boot.addEventListener(
+          "click",
+          function () {
+            location.reload();
+          },
+          { once: true },
+        );
+      }, 12000);
+    </script>
     <script type="module" src="/src/play/main.ts"></script>
   </body>
 </html>

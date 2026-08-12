@@ -4,8 +4,8 @@
   --accent: #ff6b3d;
   --ok: #7dffb3;
   --panel: rgba(12, 22, 32, 0.62);
-  --font-display: "Bebas Neue", sans-serif;
-  --font-body: "Manrope", system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Arial Narrow", "Segoe UI", sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
