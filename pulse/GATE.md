@@ -2,34 +2,26 @@
 
 ## 当前状态
 
-- 作品集：**已撤 Featured**；Orb Courier 恢复主推
-- `/pulse/`：标 **DRAFT**，仅作分析管线草稿，**不代表成片**
-- **禁止**在未授权前重写 `scene.ts` 成片视觉或 push 成片到公开 Featured
+- **成片已验收**（Ring Stage 重建）并已进入 Selected Work
+- Featured 仍以 Orb Courier 为主推；PULSEFIELD **未**挂 Featured
+- `/pulse/`：无 Draft 条；meters 仅 `?debug=1`
 
-## 开做画面的唯一口令
-
-在对话中明确回复：
+## 历史口令（已执行）
 
 ```text
 开做画面
 ```
 
-收到前，Agent **只允许**：
+重建顺序（已完成）：
 
-- 改筹备文档（DESIGN / SPEC / CREDITS）
-- 修 audio 分析 bug
-- 保持 Draft 标记与作品集降级
-
-收到后，按此顺序重建：
-
-1. 静态 Ring Stage（好看、可读、无音频也能懂是舞台）
-2. 绑定 bass / mid / high / beat（按 SPEC）
-3. 播放态叙事 HUD（品牌常驻，禁止「只剩转环」）
-4. `?debug=1` 才显示 meters
+1. 静态 Ring Stage
+2. 绑定 bass / mid / high / beat
+3. 播放态叙事 HUD
+4. `?debug=1` meters
 5. 弱设备 + reduced-motion
-6. 音轨替换评估 → 缩略图 → 你确认后再 Featured / push
+6. 验收通过后撤 Draft → commit / push
 
-## 成片验收（重建后）
+## 成片验收（已通过）
 
 - 5 秒内知道要点 Play
 - 播放时不看 HUD 也能感到音乐驱动舞台

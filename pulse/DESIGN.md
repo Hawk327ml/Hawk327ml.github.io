@@ -1,7 +1,7 @@
 # PULSEFIELD — Design Note (Phase 0 · LOCKED)
 
-> Status: **DRAFT / 筹备锁定**  
-> 弱成片已冻结，不 Featured、不 push 成片。画面重建需你回复「开做画面」。
+> Status: **SHIPPED**（Ring Stage）  
+> Featured 仍以 Orb 为主推；本页已验收上线。
 
 ## Positioning（已锁定）
 

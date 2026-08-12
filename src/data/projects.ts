@@ -102,15 +102,15 @@ export const projects: Project[] = [
     tier: "other",
   },
   {
-    id: "WIP",
-    title: "PULSEFIELD (Draft)",
-    tagline: "筹备中：音频反应环形舞台。不作为 Featured。",
-    stack: ["Draft", "Web Audio", "Three.js"],
+    id: "08",
+    title: "PULSEFIELD",
+    tagline: "环形脉冲舞台 · 频谱驱动 · 点 Play 即跟拍。",
+    stack: ["Web Audio", "Three.js", "Vite"],
     repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
     live: "/pulse/",
     accent: "#3EE0B8",
     image: "/thumbs/pulsefield.svg",
-    tier: "draft",
+    tier: "selected",
   },
 ];
 

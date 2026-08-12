@@ -1,16 +1,15 @@
 # PULSEFIELD
 
-**Status: DRAFT — 筹备中，非成片。**
+**Status: SHIPPED** — Ring Stage · track-first audio reactive stage.
 
-Audio analysis scaffold for a future **Ring Stage** visual.  
-Do not treat the current torus page as the portfolio piece.
+点 Play，环形舞台跟着音乐呼吸。
 
-## Prep docs (source of truth)
+## Docs
 
-- [DESIGN.md](./DESIGN.md) — locked motif & IA
+- [DESIGN.md](./DESIGN.md) — motif & IA
 - [SPEC.md](./SPEC.md) — band bindings & budgets
-- [GATE.md](./GATE.md) — rebuild only after user says「开做画面」
-- [Audio credits](../public/audio/CREDITS.md) — placeholder synth loops
+- [GATE.md](./GATE.md) — rebuild / ship gate
+- [Audio credits](../public/audio/CREDITS.md)
 
 ## Local
 
@@ -18,13 +17,12 @@ Do not treat the current torus page as the portfolio piece.
 npm run dev
 ```
 
-Open http://localhost:5173/pulse/ — expect orange **DRAFT** banner.
+Open http://localhost:5173/pulse/
 
-## Keep
+Meters: append `?debug=1`.
 
-- `src/pulse/audio.ts` — Web Audio band pipeline (Phase-3 gate asset)
+## Stack
 
-## Do not ship yet
-
-- Featured card / hero CTA (reverted to Orb Courier)
-- Public push of this draft as a finished work
+- `src/pulse/audio.ts` — Web Audio band pipeline
+- `src/pulse/scene.ts` — Ring Stage
+- `src/pulse/main.ts` — HUD state

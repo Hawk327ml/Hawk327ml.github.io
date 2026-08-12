@@ -120,7 +120,6 @@ app.innerHTML = `
 
   <footer class="site-footer">
     <span>© ${new Date().getFullYear()} ${profile.brand}</span>
-    <span class="footer-draft">Draft 实验：<a href="/pulse/">PULSEFIELD</a></span>
     <a href="mailto:${profile.email}">${profile.email}</a>
   </footer>
 `;

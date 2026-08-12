@@ -8,7 +8,6 @@
 ### Rest
 
 ```
-[DRAFT banner if still draft]
 [← HAWK]     PULSEFIELD      [A] [音量]
 
      点 Play，环形舞台跟着音乐呼吸。
