@@ -94,7 +94,7 @@ export const projects: Project[] = [
   {
     id: "07",
     title: "Esports Desk",
-    tagline: "电竞队务桌面端：队员、合同与赛果集中管理。",
+    tagline: "JavaFX 队务桌面端：队员 / 合同 / 赛果三表 CRUD，Maven 一键跑。",
     stack: ["Java", "JavaFX", "MySQL"],
     repo: "https://github.com/Hawk327ml/esports-team-management",
     accent: "#F45B69",
