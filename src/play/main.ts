@@ -26,7 +26,13 @@ revealShell();
 
 void import("./game")
   .then(() => {
-    if (engineStatusEl) engineStatusEl.hidden = true;
+    document.documentElement.style.cursor = "auto";
+    document.body.style.cursor = "auto";
+    if (engineStatusEl) {
+      engineStatusEl.hidden = true;
+      engineStatusEl.style.cursor = "";
+      engineStatusEl.onclick = null;
+    }
   })
   .catch((err) => {
     console.error(err);

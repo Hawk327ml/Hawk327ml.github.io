@@ -315,11 +315,23 @@ requestAnimationFrame(tick);
 
 function markEngineReady() {
   booted = true;
+  clearBusyCursor();
   const status = document.querySelector<HTMLElement>("#engine-status");
-  if (status) status.hidden = true;
+  if (status) {
+    status.hidden = true;
+    status.style.cursor = "";
+    status.onclick = null;
+  }
   modePickEl.querySelectorAll<HTMLButtonElement>("[data-mode]").forEach((btn) => {
     btn.disabled = false;
+    btn.style.cursor = "pointer";
   });
+}
+
+function clearBusyCursor() {
+  document.documentElement.style.cursor = "auto";
+  document.body.style.cursor = "auto";
+  canvas!.style.cursor = "default";
 }
 
 function tick() {
@@ -368,6 +380,7 @@ function tick() {
 function selectMode(mode: ModeId) {
   currentMode = mode;
   awaitingMode = false;
+  clearBusyCursor();
   modePickEl.hidden = true;
   hudEl.hidden = false;
   modeTagEl.textContent = MODE_META[mode].tag;
