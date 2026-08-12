@@ -47,17 +47,6 @@ export const projects: Project[] = [
   },
   {
     id: "03",
-    title: "梦隙牌局 · Dream Rift Cards",
-    tagline:
-      "数据驱动卡牌战斗：抽牌 / 费用 / 敌人预告 / 污染牌 / 战后选卡 / 多关卡。纯前端可玩。",
-    stack: ["HTML/CSS/JS", "Game Design", "ES Modules"],
-    repo: "https://github.com/Hawk327ml/dream-card-game",
-    live: "https://hawk327ml.github.io/dream-card-game/",
-    accent: "#62D6BE",
-    image: "/thumbs/dream-rift.svg",
-  },
-  {
-    id: "04",
     title: "Rosemary Care Notebook",
     tagline:
       "CSM3401 产品档案站：护理叙事 + 手绘插画，Firebase Hosting 已上线。",
@@ -68,7 +57,7 @@ export const projects: Project[] = [
     image: "/thumbs/rosemary.png",
   },
   {
-    id: "05",
+    id: "04",
     title: "AAPL Stock Prediction",
     tagline:
       "CSM3601 Group13：次日 Adj Close 回归（Ridge）。对外指标以 Notebook 为准：2024 test MAE 2.12 / RMSE 2.88 / R² 0.987。附海报与 Demo 链接（网页源码未收录）。",
@@ -79,7 +68,7 @@ export const projects: Project[] = [
     image: "/thumbs/aapl.png",
   },
   {
-    id: "06",
+    id: "05",
     title: "Tempe Traffic Crash EDA",
     tagline:
       "CSM3601：Tempe 交通事故公开数据清洗、EDA 与特征工程（Data.gov）。",
@@ -89,7 +78,7 @@ export const projects: Project[] = [
     image: "/thumbs/traffic.svg",
   },
   {
-    id: "07",
+    id: "06",
     title: "WeChat Attendance Automation",
     tagline:
       "企业微信考勤月报自动化：请假 / 异常 / 全勤报表（隐私输出未公开）。",
@@ -99,7 +88,7 @@ export const projects: Project[] = [
     image: "/thumbs/attendance.svg",
   },
   {
-    id: "08",
+    id: "07",
     title: "Esports Team Management",
     tagline: "JavaFX + MySQL：队员、合同与赛事结果管理桌面应用。",
     stack: ["Java", "JavaFX", "MySQL"],

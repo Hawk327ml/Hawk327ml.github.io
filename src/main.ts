@@ -44,7 +44,7 @@ app.innerHTML = `
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">PROJECTS</h2>
         <p class="section-desc">
-          Orb Courier、FocusSpace / Luna Dining 3D Web、梦隙牌局、Rosemary 产品站、AAPL 预测、Tempe EDA、企微考勤、电竞管理。
+          Orb Courier、FocusSpace / Luna Dining 3D Web、Rosemary 产品站、AAPL 预测、Tempe EDA、企微考勤、电竞管理。
         </p>
       </div>
       <div class="projects">
