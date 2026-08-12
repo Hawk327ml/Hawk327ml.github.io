@@ -9,12 +9,13 @@ const FOV_BASE = 48;
 const FOV_SPRINT = 58;
 const FOV_PUNCH = 4.5;
 const SURFACE = PLANET_R + 0.18;
-const PICK_RANGE = 1.12;
 const NEAR_RANGE = 2.55;
 const ACCEL = 12;
 const DECEL = 14;
-const TIME_LIMIT = 90;
+const TIME_LIMIT = 105;
+const STICK_SPRINT = 0.72;
 const LEAN = isLeanDevice();
+const PICK_RANGE = LEAN ? 1.28 : 1.12;
 
 type ModeId = "classic" | "challenge" | "timed";
 
@@ -35,14 +36,17 @@ const MODE_META: Record<
 > = {
   classic: { label: "Classic", tag: "CLASSIC", goals: 3, blurb: "free run" },
   challenge: { label: "Challenge", tag: "CHALLENGE", goals: 4, blurb: "long route" },
-  timed: { label: "Timed", tag: "TIMED", goals: 3, blurb: "90s limit" },
+  timed: { label: "Timed", tag: "TIMED", goals: 3, blurb: "105s limit" },
 };
 
 const canvas = document.querySelector<HTMLCanvasElement>("#c");
 const scoreNode = document.querySelector<HTMLParagraphElement>("#score");
 const hintNode = document.querySelector<HTMLParagraphElement>("#hint");
 const toastNode = document.querySelector<HTMLParagraphElement>("#toast");
+const coachNode = document.querySelector<HTMLParagraphElement>("#coach");
 const touchNode = document.querySelector<HTMLDivElement>("#touch");
+const stickBaseNode = document.querySelector<HTMLDivElement>("#stick-base");
+const stickKnobNode = document.querySelector<HTMLDivElement>("#stick-knob");
 const sprintNode = document.querySelector<HTMLButtonElement>("#sprint");
 const restartNode = document.querySelector<HTMLButtonElement>("#restart");
 const bootNode = document.querySelector<HTMLDivElement>("#boot");
@@ -69,7 +73,10 @@ if (
   !scoreNode ||
   !hintNode ||
   !toastNode ||
+  !coachNode ||
   !touchNode ||
+  !stickBaseNode ||
+  !stickKnobNode ||
   !sprintNode ||
   !restartNode ||
   !bootNode ||
@@ -97,7 +104,9 @@ if (
 const scoreEl = scoreNode;
 const hintEl = hintNode;
 const toastEl = toastNode;
-const touchEl = touchNode;
+const coachEl = coachNode;
+const stickBaseEl = stickBaseNode;
+const stickKnobEl = stickKnobNode;
 const sprintBtn = sprintNode;
 const restartBtn = restartNode;
 const bootEl = bootNode;
@@ -220,6 +229,10 @@ const keys = {
   sprint: false,
 };
 
+const stick = { x: 0, y: 0, active: false, pointerId: -1 };
+let sprintToggle = false;
+let coachTimer = 0;
+
 const up = new THREE.Vector3(0, 1, 0);
 const forward = new THREE.Vector3();
 const right = new THREE.Vector3();
@@ -308,6 +321,11 @@ function tick() {
     }
   }
 
+  if (coachTimer > 0) {
+    coachTimer -= dt;
+    if (coachTimer <= 0 || started) hideCoach();
+  }
+
   updateMovement(dt);
   updateCamera(dt);
   updateJobs();
@@ -360,7 +378,12 @@ function openModePick() {
   edgeEl.hidden = true;
   proximityEl.hidden = true;
   toastEl.hidden = true;
+  hideCoach();
   timerEl.classList.remove("is-urgent");
+  resetStick();
+  sprintToggle = false;
+  sprintBtn.classList.remove("is-on");
+  sprintBtn.setAttribute("aria-pressed", "false");
 }
 
 function goalCount() {
@@ -400,14 +423,24 @@ function updateMovement(dt: number) {
   right.crossVectors(forward, up).normalize();
 
   move.set(0, 0, 0);
-  if (keys.forward) move.add(forward);
-  if (keys.back) move.sub(forward);
-  if (keys.left) move.sub(right);
-  if (keys.right) move.add(right);
+  if (stick.active) {
+    move.addScaledVector(forward, stick.y);
+    move.addScaledVector(right, stick.x);
+  } else {
+    if (keys.forward) move.add(forward);
+    if (keys.back) move.sub(forward);
+    if (keys.left) move.sub(right);
+    if (keys.right) move.add(right);
+  }
 
-  if (move.lengthSq() > 0) started = true;
+  if (move.lengthSq() > 0) {
+    if (!started) hideCoach();
+    started = true;
+  }
 
-  const wantSprint = keys.sprint && move.lengthSq() > 0;
+  const stickMag = stick.active ? Math.hypot(stick.x, stick.y) : 0;
+  const wantSprint =
+    (keys.sprint || sprintToggle || stickMag >= STICK_SPRINT) && move.lengthSq() > 0;
   const targetSpeed = move.lengthSq() > 0 ? (wantSprint ? SPRINT_SPEED : WALK_SPEED) : 0;
   const rate = targetSpeed > speed ? ACCEL : DECEL;
   speed = THREE.MathUtils.damp(speed, targetSpeed, rate, dt);
@@ -524,6 +557,8 @@ function finishRun(won: boolean) {
   guide.visible = false;
   edgeEl.hidden = true;
   proximityEl.hidden = true;
+  hideCoach();
+  resetStick();
   timerEl.classList.remove("is-urgent");
 
   const goals = goalCount();
@@ -735,12 +770,16 @@ function resetRun(announce: boolean) {
   started = false;
   runTime = 0;
   lastTimerSec = -1;
-  idleHintAt = 8;
+  idleHintAt = 3.5;
   speed = 0;
   camVel.set(0, 0, 0);
   fovPunch = 0;
   facing.set(0, 0, 1);
   lastEdgeKey = "";
+  sprintToggle = false;
+  sprintBtn.classList.remove("is-on");
+  sprintBtn.setAttribute("aria-pressed", "false");
+  resetStick();
   courier.parcel.visible = false;
   courier.bob.position.y = 0;
   courier.bob.rotation.z = 0;
@@ -758,10 +797,14 @@ function resetRun(announce: boolean) {
   }
   modeTagEl.textContent = MODE_META[currentMode].tag;
   setObjective("FIND YELLOW PACKAGE");
+  const touchHint = window.matchMedia("(hover: none), (max-width: 820px)").matches;
   hintEl.textContent =
     currentMode === "timed"
-      ? `限时 ${TIME_LIMIT}s · 黄块拾取 · 橙柱送达 · Shift 冲刺`
-      : "黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺";
+      ? `限时 ${TIME_LIMIT}s · 黄块拾取 · 橙柱送达`
+      : "黄块 = 包裹 · 橙柱 = 送达点";
+  if (!touchHint) {
+    hintEl.textContent += " · WASD + Shift";
+  }
 
   for (const job of jobs) {
     scene.remove(job.pickupMesh, job.pickupRing, job.dropMesh, job.dropLight, job.dropRing);
@@ -770,11 +813,12 @@ function resetRun(announce: boolean) {
   refreshJobVisibility();
 
   placeOnSphere(courier.root, worldY, facing);
+  faceFirstTarget();
   camera.position
     .copy(courier.root.position)
-    .addScaledVector(up.copy(worldY), 3.7)
+    .addScaledVector(up.copy(courier.root.position).normalize(), 3.7)
     .addScaledVector(facing, -5.1);
-  camera.up.copy(worldY);
+  camera.up.copy(courier.root.position).normalize();
   camera.fov = FOV_BASE;
   lastFov = FOV_BASE;
   camera.updateProjectionMatrix();
@@ -782,10 +826,11 @@ function resetRun(announce: boolean) {
   clearKeys();
   refreshBestHud();
   resultNoteEl.hidden = true;
+  showCoach(touchHint);
 
   if (announce) {
     beep(360, 0.05, "triangle");
-    showToast("NEW ROUTE");
+    showToast(currentMode === "timed" ? "GO · 105s" : "GO · FOLLOW GREEN");
   }
 }
 
@@ -1265,47 +1310,96 @@ function setKey(code: string, down: boolean) {
 
 function clearKeys() {
   keys.forward = keys.back = keys.left = keys.right = keys.sprint = false;
-  touchEl.querySelectorAll(".is-on").forEach((el) => el.classList.remove("is-on"));
-  sprintBtn.classList.remove("is-on");
+  if (!sprintToggle) sprintBtn.classList.remove("is-on");
+}
+
+function resetStick() {
+  stick.active = false;
+  stick.pointerId = -1;
+  stick.x = 0;
+  stick.y = 0;
+  stickKnobEl.style.transform = "translate(0px, 0px)";
+}
+
+function showCoach(touchHint: boolean) {
+  coachEl.textContent = touchHint
+    ? "绿箭头指路 · 左摇杆移动 · 点右下冲刺"
+    : "绿箭头指路 · WASD 移动 · Shift 冲刺";
+  coachEl.hidden = false;
+  coachTimer = 5;
+}
+
+function hideCoach() {
+  coachTimer = 0;
+  coachEl.hidden = true;
+}
+
+function faceFirstTarget() {
+  const target = currentTarget();
+  if (!target) return;
+  up.copy(courier.root.position).normalize();
+  tmp.copy(target).sub(courier.root.position).projectOnPlane(up);
+  if (tmp.lengthSq() < 1e-6) return;
+  facing.copy(tmp.normalize());
+  alignObject(courier.root, up, facing);
+  courier.root.quaternion.copy(qAlign);
 }
 
 function bindTouch() {
-  const buttons = [
-    ...touchEl.querySelectorAll<HTMLButtonElement>("button[data-dir]"),
-    sprintBtn,
-  ];
+  const maxR = () => stickBaseEl.clientWidth * 0.38;
 
-  const map: Record<string, keyof typeof keys> = {
-    forward: "forward",
-    back: "back",
-    left: "left",
-    right: "right",
-    sprint: "sprint",
+  const applyStick = (clientX: number, clientY: number) => {
+    const rect = stickBaseEl.getBoundingClientRect();
+    const cx = rect.left + rect.width * 0.5;
+    const cy = rect.top + rect.height * 0.5;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    const r = maxR();
+    const mag = Math.hypot(dx, dy);
+    if (mag > r && mag > 0) {
+      dx = (dx / mag) * r;
+      dy = (dy / mag) * r;
+    }
+    stick.x = r > 0 ? dx / r : 0;
+    stick.y = r > 0 ? -dy / r : 0;
+    stickKnobEl.style.transform = `translate(${dx}px, ${dy}px)`;
   };
 
-  buttons.forEach((btn) => {
-    const dir = btn.dataset.dir;
-    if (!dir || !(dir in map)) return;
-    const key = map[dir];
+  const endStick = (pointerId: number) => {
+    if (stick.pointerId !== pointerId) return;
+    resetStick();
+  };
 
-    const on = () => {
-      if (awaitingMode || finished) return;
-      keys[key] = true;
-      btn.classList.add("is-on");
-    };
-    const off = () => {
-      keys[key] = false;
-      btn.classList.remove("is-on");
-    };
+  stickBaseEl.addEventListener("pointerdown", (e) => {
+    if (awaitingMode || finished) return;
+    e.preventDefault();
+    stick.active = true;
+    stick.pointerId = e.pointerId;
+    stickBaseEl.setPointerCapture(e.pointerId);
+    applyStick(e.clientX, e.clientY);
+  });
+  stickBaseEl.addEventListener("pointermove", (e) => {
+    if (!stick.active || stick.pointerId !== e.pointerId) return;
+    e.preventDefault();
+    applyStick(e.clientX, e.clientY);
+  });
+  stickBaseEl.addEventListener("pointerup", (e) => endStick(e.pointerId));
+  stickBaseEl.addEventListener("pointercancel", (e) => endStick(e.pointerId));
+  stickBaseEl.addEventListener("lostpointercapture", () => {
+    if (stick.active) resetStick();
+  });
 
-    btn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      btn.setPointerCapture(e.pointerId);
-      on();
-    });
-    btn.addEventListener("pointerup", off);
-    btn.addEventListener("pointercancel", off);
-    btn.addEventListener("lostpointercapture", off);
+  const toggleSprint = () => {
+    if (awaitingMode || finished) return;
+    sprintToggle = !sprintToggle;
+    sprintBtn.classList.toggle("is-on", sprintToggle);
+    sprintBtn.setAttribute("aria-pressed", sprintToggle ? "true" : "false");
+    beep(sprintToggle ? 480 : 320, 0.04, "triangle");
+  };
+
+  sprintBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    toggleSprint();
   });
 }
 

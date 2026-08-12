@@ -36,10 +36,11 @@
     <div id="mode-pick" class="mode-pick" hidden>
       <p class="mode-kicker">Choose Route</p>
       <h1 class="mode-title">ORB COURIER</h1>
+      <p class="mode-how">黄块拾取 → 橙柱送达 · 跟着绿箭头</p>
       <div class="mode-grid">
-        <button type="button" class="mode-card" data-mode="classic">
+        <button type="button" class="mode-card is-recommend" data-mode="classic">
           <span class="mode-name">Classic</span>
-          <span class="mode-meta">3 parcels · free run</span>
+          <span class="mode-meta">3 parcels · 推荐首玩</span>
         </button>
         <button type="button" class="mode-card" data-mode="challenge">
           <span class="mode-name">Challenge</span>
@@ -47,7 +48,7 @@
         </button>
         <button type="button" class="mode-card" data-mode="timed">
           <span class="mode-name">Timed</span>
-          <span class="mode-meta">3 parcels · 90s limit</span>
+          <span class="mode-meta">3 parcels · 105s limit</span>
         </button>
       </div>
     </div>
@@ -68,20 +69,18 @@
       </header>
 
       <p class="hint" id="hint">黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺</p>
+      <p class="coach" id="coach" hidden>绿箭头指路 · 左摇杆移动 · 点右下冲刺</p>
       <p class="proximity" id="proximity" hidden>靠近即可拾取</p>
       <p class="toast" id="toast" hidden></p>
       <div class="edge-arrow" id="edge" hidden aria-hidden="true"></div>
       <p class="credit">HAWK · Portfolio demo</p>
 
-      <div class="pad pad-move" id="touch" aria-hidden="true">
-        <button type="button" data-dir="forward">↑</button>
-        <div class="pad-row">
-          <button type="button" data-dir="left">←</button>
-          <button type="button" data-dir="back">↓</button>
-          <button type="button" data-dir="right">→</button>
+      <div class="pad pad-stick" id="touch" aria-hidden="true">
+        <div class="stick-base" id="stick-base">
+          <div class="stick-knob" id="stick-knob"></div>
         </div>
       </div>
-      <button type="button" class="pad pad-sprint" id="sprint" data-dir="sprint" aria-hidden="true">
+      <button type="button" class="pad pad-sprint" id="sprint" aria-hidden="true" aria-pressed="false">
         冲刺
       </button>
     </div>
