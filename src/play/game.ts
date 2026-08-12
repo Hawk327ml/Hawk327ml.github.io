@@ -1,16 +1,5 @@
 import * as THREE from "three";
 
-type OrbApi = {
-  ready: boolean;
-  selectMode: (mode: "classic" | "challenge" | "timed") => void;
-};
-
-declare global {
-  interface Window {
-    __orb?: OrbApi;
-  }
-}
-
 const PLANET_R = 5;
 const WALK_SPEED = 2.55;
 const SPRINT_SPEED = 4.55;
@@ -332,13 +321,14 @@ function markEngineReady() {
     btn.disabled = false;
     btn.style.cursor = "pointer";
   });
-  window.__orb = {
-    ready: true,
-    selectMode: (mode: ModeId) => {
-      selectMode(mode);
-    },
-  };
 }
+
+/** Public entry used by play/main.ts after dynamic import. */
+export function selectOrbMode(mode: ModeId) {
+  selectMode(mode);
+}
+
+export const orbReady = true;
 
 function clearBusyCursor() {
   document.documentElement.style.cursor = "auto";

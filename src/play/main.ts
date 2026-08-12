@@ -2,16 +2,10 @@ import "./style.css";
 
 type ModeId = "classic" | "challenge" | "timed";
 
-type OrbApi = {
-  ready: boolean;
-  selectMode: (mode: ModeId) => void;
+type GameModule = {
+  orbReady?: boolean;
+  selectOrbMode?: (mode: ModeId) => void;
 };
-
-declare global {
-  interface Window {
-    __orb?: OrbApi;
-  }
-}
 
 const bootEl = document.querySelector<HTMLDivElement>("#boot");
 const bootCopyEl = document.querySelector<HTMLParagraphElement>("#boot-copy");
@@ -22,6 +16,7 @@ const modeButtons = [
 ];
 
 let pendingMode: ModeId | null = null;
+let selectOrbMode: ((mode: ModeId) => void) | null = null;
 
 function revealShell() {
   if (bootEl) {
@@ -73,8 +68,7 @@ function isModeId(value: string | undefined): value is ModeId {
 }
 
 function trySelect(mode: ModeId) {
-  const api = window.__orb;
-  if (!api?.ready) {
+  if (!selectOrbMode) {
     pendingMode = mode;
     if (engineStatusEl) {
       engineStatusEl.hidden = false;
@@ -83,7 +77,7 @@ function trySelect(mode: ModeId) {
     return;
   }
   try {
-    api.selectMode(mode);
+    selectOrbMode(mode);
   } catch (err) {
     console.error(err);
     showFail(err);
@@ -107,17 +101,15 @@ async function loadEngine(attempt = 1): Promise<void> {
     engineStatusEl.textContent = `引擎重试中…（${attempt}/3）`;
   }
   try {
-    await import("./game");
+    const game = (await import("./game")) as GameModule;
     document.documentElement.style.cursor = "auto";
     document.body.style.cursor = "auto";
 
-    // Wait a frame in case game sets window.__orb at end of evaluation.
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-
-    if (!window.__orb?.ready) {
-      throw new Error("ORB_API_MISSING");
+    if (typeof game.selectOrbMode !== "function" || game.orbReady !== true) {
+      throw new Error("ORB_EXPORT_MISSING");
     }
 
+    selectOrbMode = game.selectOrbMode;
     setButtonsEnabled(true);
     if (engineStatusEl) {
       engineStatusEl.hidden = true;
