@@ -1,11 +1,16 @@
 /**
  * Capture a ~15s silent Orb Courier loop for the portfolio card.
- * Usage: node scripts/capture-orb-cover.mjs [baseUrl]
- * Default: builds preview on http://127.0.0.1:4173
+ * Uses system Chrome + @ffmpeg-installer (no Playwright Chromium download).
+ *
+ * Usage:
+ *   npm run build
+ *   npm run capture:orb-cover
+ *   npm run capture:orb-cover -- https://hawk327ml.github.io
  */
 import { chromium } from "playwright";
+import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import { spawn } from "node:child_process";
-import { copyFile, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,6 +18,20 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outWebm = path.join(root, "public", "thumbs", "orb-courier.webm");
 const requestedUrl = process.argv[2];
+const FPS = 12;
+const DURATION_SEC = 15;
+const FRAME_COUNT = FPS * DURATION_SEC;
+
+function run(cmd, args, opts = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, { ...opts, stdio: "inherit", shell: true });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`${cmd} exited ${code}`));
+    });
+  });
+}
 
 async function waitForServer(url, timeoutMs = 90000) {
   const start = Date.now();
@@ -53,17 +72,15 @@ async function main() {
     stopPreview = preview.stop;
   }
 
-  const videoDir = await mkdtemp(path.join(tmpdir(), "orb-cover-"));
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
+  const frameDir = await mkdtemp(path.join(tmpdir(), "orb-frames-"));
+  const browser = await chromium.launch({
+    channel: "chrome",
+    headless: true,
+  });
+  const page = await browser.newPage({
     viewport: { width: 1280, height: 720 },
     deviceScaleFactor: 1,
-    recordVideo: {
-      dir: videoDir,
-      size: { width: 1280, height: 720 },
-    },
   });
-  const page = await context.newPage();
 
   try {
     await page.goto(`${base.replace(/\/$/, "")}/play/?orb=${Date.now()}`, {
@@ -80,36 +97,59 @@ async function main() {
       },
       { timeout: 120000 },
     );
-
     await classic.click();
     await page.waitForSelector("#hud:not([hidden])", { timeout: 30000 });
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(700);
 
-    const end = Date.now() + 15000;
-    while (Date.now() < end) {
-      const slice = Math.min(2200, end - Date.now());
-      await page.keyboard.down("KeyW");
-      if (Date.now() % 5000 < 1800) await page.keyboard.down("Shift");
+    // Hide chrome UI for a cleaner cover crop.
+    await page.addStyleTag({
+      content: `
+        #boot, #mode-pick, .credit, .back, #coach, #hint, #toast, #proximity, #edge { display: none !important; }
+        #hud { background: transparent !important; }
+        .hud-top, .pad { opacity: 0.35; }
+      `,
+    });
+
+    await page.keyboard.down("KeyW");
+    const interval = 1000 / FPS;
+    for (let i = 0; i < FRAME_COUNT; i++) {
+      const t0 = Date.now();
+      if (i % 36 < 14) await page.keyboard.down("Shift");
       else await page.keyboard.up("Shift");
-      if (Date.now() % 7000 < 1600) await page.keyboard.down("KeyD");
+      if (i % 48 < 16) await page.keyboard.down("KeyD");
       else await page.keyboard.up("KeyD");
-      await page.waitForTimeout(slice);
+
+      const file = path.join(frameDir, `frame_${String(i).padStart(4, "0")}.png`);
+      await page.screenshot({ path: file, type: "png" });
+
+      const spent = Date.now() - t0;
+      if (spent < interval) await page.waitForTimeout(interval - spent);
     }
     await page.keyboard.up("KeyW");
     await page.keyboard.up("KeyD");
     await page.keyboard.up("Shift");
-    await page.waitForTimeout(400);
   } finally {
-    await context.close();
     await browser.close();
     if (stopPreview) stopPreview();
   }
 
-  const files = (await readdir(videoDir)).filter((f) => f.endsWith(".webm"));
-  if (!files.length) throw new Error("No WebM recorded by Playwright");
   await mkdir(path.dirname(outWebm), { recursive: true });
-  await copyFile(path.join(videoDir, files[0]), outWebm);
-  await rm(videoDir, { recursive: true, force: true });
+  await run(ffmpegInstaller.path, [
+    "-y",
+    "-framerate",
+    String(FPS),
+    "-i",
+    path.join(frameDir, "frame_%04d.png"),
+    "-c:v",
+    "libvpx-vp9",
+    "-b:v",
+    "1M",
+    "-an",
+    "-pix_fmt",
+    "yuv420p",
+    outWebm,
+  ]);
+  await rm(frameDir, { recursive: true, force: true });
   console.log(`Wrote ${outWebm}`);
 }
 

@@ -10,6 +10,7 @@
     "capture:orb-cover": "node scripts/capture-orb-cover.mjs"
   },
   "devDependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@types/three": "^0.185.4",
     "playwright": "^1.62.1",
     "typescript": "^5.9.2",
