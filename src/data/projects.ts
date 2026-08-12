@@ -7,6 +7,8 @@ export type Project = {
   live?: string;
   accent: string;
   image: string;
+  /** Optional muted looping cover (WebM/MP4). `image` remains poster/fallback. */
+  video?: string;
   featured?: boolean;
   /** selected = main list; other = supporting; draft = hidden from Selected Work */
   tier?: "selected" | "other" | "draft";
@@ -22,6 +24,7 @@ export const projects: Project[] = [
     live: "/play/",
     accent: "#FF6B3D",
     image: "/thumbs/orb-courier.svg",
+    video: "/thumbs/orb-courier.webm",
     featured: true,
     tier: "selected",
   },

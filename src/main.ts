@@ -10,6 +10,18 @@ function renderProject(p: Project) {
   const href = p.live ?? p.repo;
   const external = !p.live || p.live.startsWith("http");
   const extAttrs = external ? 'target="_blank" rel="noreferrer"' : "";
+  const media = p.video
+    ? `<video
+          src="${p.video}"
+          poster="${p.image}"
+          muted
+          loop
+          playsinline
+          autoplay
+          preload="metadata"
+          aria-label="${p.title} 预览"
+        ></video>`
+    : `<img src="${p.image}" alt="${p.title} 预览" loading="lazy" />`;
   return `
     <article class="project${p.featured ? " is-featured" : ""}" style="--project-accent: ${p.accent}" data-reveal>
       <div class="project-id">${p.id}</div>
@@ -25,7 +37,7 @@ function renderProject(p: Project) {
           </ul>
         </div>
         <a class="project-media" href="${href}" ${extAttrs} aria-label="${p.title} 预览">
-          <img src="${p.image}" alt="${p.title} 预览" loading="lazy" />
+          ${media}
         </a>
       </div>
       <div class="project-links">
@@ -141,3 +153,21 @@ revealItems.forEach((el, i) => {
   el.style.transitionDelay = `${Math.min(i, 8) * 70}ms`;
   observer.observe(el);
 });
+
+const coverVideos = [
+  ...app.querySelectorAll<HTMLVideoElement>(".project-media video"),
+];
+const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const syncCoverMotion = () => {
+  for (const video of coverVideos) {
+    if (motionQuery.matches) {
+      video.pause();
+      video.removeAttribute("autoplay");
+    } else {
+      video.setAttribute("autoplay", "");
+      void video.play().catch(() => {});
+    }
+  }
+};
+syncCoverMotion();
+motionQuery.addEventListener("change", syncCoverMotion);
