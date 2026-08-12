@@ -37,10 +37,11 @@ Push to `main` on `Hawk327ml/Hawk327ml.github.io`. GitHub Actions publishes to G
 |---------|-------|
 | Orb Courier | [Play](https://Hawk327ml.github.io/play/) |
 | FocusSpace | [Live](https://hawk327ml.github.io/focusspace-3d/) · [Repo](https://github.com/Hawk327ml/focusspace-3d) |
-| Luna Dining | [Live](https://hawk327ml.github.io/luna-dining-3d/) · [Repo](https://github.com/Hawk327ml/luna-dining-3d) |
 | Rosemary | [Live](https://rosemary-care-notebook.web.app) · [Repo](https://github.com/Hawk327ml/Build-rosemary-profile-site) |
+| Luna Dining | [Live](https://hawk327ml.github.io/luna-dining-3d/) · [Repo](https://github.com/Hawk327ml/luna-dining-3d) |
 | AAPL Forecast | [Live](https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/) · [Repo](https://github.com/Hawk327ml/AAPL-Stock-Prediction) |
-| Tempe Crash EDA | [Repo](https://github.com/Hawk327ml/Traffic-Accident-Data-Analysis) |
-| Attendance Tools | [Repo](https://github.com/Hawk327ml/wechat-attendance-converter) |
-| Esports Desk | [Repo](https://github.com/Hawk327ml/esports-team-management) |
-| PULSEFIELD | Draft only — see [pulse/](./pulse/) |
+
+Supporting (Other): Tempe Crash EDA · Attendance Tools · Esports Desk  
+
+**PULSEFIELD** is draft-only (`/pulse/`) — not in Selected Work until [pulse/GATE.md](./pulse/GATE.md) is approved.
+

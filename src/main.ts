@@ -1,10 +1,47 @@
 import "./style.css";
-import { profile, projects } from "./data/projects";
+import { profile, projects, type Project } from "./data/projects";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) {
   throw new Error("#app not found");
 }
+
+function renderProject(p: Project) {
+  const href = p.live ?? p.repo;
+  const external = !p.live || p.live.startsWith("http");
+  const extAttrs = external ? 'target="_blank" rel="noreferrer"' : "";
+  return `
+    <article class="project${p.featured ? " is-featured" : ""}" style="--project-accent: ${p.accent}" data-reveal>
+      <div class="project-id">${p.id}</div>
+      <div class="project-body">
+        <div class="project-copy">
+          ${p.featured ? `<p class="project-badge">Featured</p>` : ""}
+          <h3 class="project-title">
+            <a href="${href}" ${extAttrs}>${p.title}</a>
+          </h3>
+          <p class="project-tagline">${p.tagline}</p>
+          <ul class="project-stack">
+            ${p.stack.map((s) => `<li>${s}</li>`).join("")}
+          </ul>
+        </div>
+        <a class="project-media" href="${href}" ${extAttrs} aria-label="${p.title} 预览">
+          <img src="${p.image}" alt="${p.title} 预览" loading="lazy" />
+        </a>
+      </div>
+      <div class="project-links">
+        ${
+          p.live
+            ? `<a href="${p.live}" ${p.live.startsWith("/") ? "" : 'target="_blank" rel="noreferrer"'}>Live ↗</a>`
+            : ""
+        }
+        <a href="${p.repo}" target="_blank" rel="noreferrer">Code ↗</a>
+      </div>
+    </article>
+  `;
+}
+
+const selected = projects.filter((p) => (p.tier ?? "selected") === "selected");
+const other = projects.filter((p) => p.tier === "other");
 
 app.innerHTML = `
   <div class="grain" aria-hidden="true"></div>
@@ -43,43 +80,21 @@ app.innerHTML = `
       <div class="section-head">
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">WORK</h2>
+        <p class="section-desc">优先看可玩的互动与已上线产品；课设与工具放在下方。</p>
       </div>
       <div class="projects">
-        ${projects
-          .map((p) => {
-            const href = p.live ?? p.repo;
-            const external = !p.live || p.live.startsWith("http");
-            const extAttrs = external ? 'target="_blank" rel="noreferrer"' : "";
-            return `
-          <article class="project${p.featured ? " is-featured" : ""}" style="--project-accent: ${p.accent}" data-reveal>
-            <div class="project-id">${p.id}</div>
-            <div class="project-body">
-              <div class="project-copy">
-                ${p.featured ? `<p class="project-badge">Featured</p>` : ""}
-                <h3 class="project-title">
-                  <a href="${href}" ${extAttrs}>${p.title}</a>
-                </h3>
-                <p class="project-tagline">${p.tagline}</p>
-                <ul class="project-stack">
-                  ${p.stack.map((s) => `<li>${s}</li>`).join("")}
-                </ul>
-              </div>
-              <a class="project-media" href="${href}" ${extAttrs} aria-label="${p.title} preview">
-                <img src="${p.image}" alt="" loading="lazy" />
-              </a>
-            </div>
-            <div class="project-links">
-              ${
-                p.live
-                  ? `<a href="${p.live}" ${p.live.startsWith("/") ? "" : 'target="_blank" rel="noreferrer"'}>Live ↗</a>`
-                  : ""
-              }
-              <a href="${p.repo}" target="_blank" rel="noreferrer">Code ↗</a>
-            </div>
-          </article>
-        `;
-          })
-          .join("")}
+        ${selected.map(renderProject).join("")}
+      </div>
+    </section>
+
+    <section id="other" class="other-work" aria-labelledby="other-title">
+      <div class="section-head">
+        <p class="section-kicker">Also</p>
+        <h2 class="section-title" id="other-title">OTHER</h2>
+        <p class="section-desc">数据课设与桌面工具——看代码与思路即可。</p>
+      </div>
+      <div class="projects projects-compact">
+        ${other.map(renderProject).join("")}
       </div>
     </section>
 
@@ -91,15 +106,22 @@ app.innerHTML = `
       <div class="about-grid">
         <p>
           <strong>${profile.brand}</strong> · ${profile.role}<br />
-          喜欢把互动和工具做成能直接打开的东西。
+          ${profile.blurb}
         </p>
+        <p class="about-note">${profile.seeking}</p>
+        <p class="about-note">${profile.contactNote}</p>
+        <div class="cta-row about-cta">
+          <a class="btn btn-primary" href="mailto:${profile.email}">${profile.email}</a>
+          <a class="btn btn-ghost" href="${profile.github}" target="_blank" rel="noreferrer">GitHub @${profile.handle}</a>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <span>© ${new Date().getFullYear()} ${profile.brand}</span>
-    <a href="${profile.github}" target="_blank" rel="noreferrer">${profile.github.replace("https://", "")}</a>
+    <span class="footer-draft">Draft 实验：<a href="/pulse/">PULSEFIELD</a></span>
+    <a href="mailto:${profile.email}">${profile.email}</a>
   </footer>
 `;
 
@@ -117,6 +139,6 @@ const observer = new IntersectionObserver(
 );
 
 revealItems.forEach((el, i) => {
-  el.style.transitionDelay = `${i * 80}ms`;
+  el.style.transitionDelay = `${Math.min(i, 8) * 70}ms`;
   observer.observe(el);
 });

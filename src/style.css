@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap");
-
 :root {
   --bg: #0b0f0c;
   --bg-elevated: #121812;
@@ -40,6 +38,13 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 img {
@@ -446,6 +451,23 @@ section {
   font-size: 0.95rem !important;
 }
 
+.about-cta {
+  margin-top: 0.25rem;
+}
+
+.other-work {
+  padding-top: 0.5rem;
+}
+
+.projects-compact .project-media {
+  max-width: 180px;
+  aspect-ratio: 16 / 10;
+}
+
+.projects-compact .project.is-featured .project-media {
+  aspect-ratio: 16 / 10;
+}
+
 .site-footer {
   padding: 2rem var(--pad) 2.5rem;
   border-top: 1px solid var(--line);
@@ -456,6 +478,16 @@ section {
   color: var(--muted);
   font-size: 0.8rem;
   letter-spacing: 0.04em;
+}
+
+.footer-draft a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.footer-draft a:hover {
+  color: var(--accent);
 }
 
 @keyframes rise {
