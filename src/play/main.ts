@@ -101,11 +101,13 @@ async function loadEngine(attempt = 1): Promise<void> {
     engineStatusEl.textContent = `引擎重试中…（${attempt}/3）`;
   }
   try {
-    const game = (await import("./game")) as GameModule;
+    const game = (await import("./game")) as GameModule | undefined;
     document.documentElement.style.cursor = "auto";
     document.body.style.cursor = "auto";
 
-    if (typeof game.selectOrbMode !== "function" || game.orbReady !== true) {
+    // Vite __vitePreload can resolve to undefined if vite:preloadError is
+    // preventDefault'd — guard before touching exports.
+    if (!game || typeof game.selectOrbMode !== "function" || game.orbReady !== true) {
       throw new Error("ORB_EXPORT_MISSING");
     }
 

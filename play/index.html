@@ -146,10 +146,9 @@
     <canvas id="c"></canvas>
     <script>
       // Reveal route picker before any JS chunk downloads (three is ~0.5MB).
+      // Do NOT preventDefault on vite:preloadError — that turns a failed
+      // dynamic import into `undefined` and breaks selectOrbMode wiring.
       (function () {
-        window.addEventListener("vite:preloadError", function (event) {
-          event.preventDefault();
-        });
         var boot = document.getElementById("boot");
         var pick = document.getElementById("mode-pick");
         var status = document.getElementById("engine-status");
