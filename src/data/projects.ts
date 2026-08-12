@@ -32,7 +32,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/focusspace-3d",
     live: "https://hawk327ml.github.io/focusspace-3d/",
     accent: "#3B82F6",
-    image: "/thumbs/focusspace.png",
+    image: "/thumbs/focusspace.svg",
   },
   {
     id: "02",
@@ -43,7 +43,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Hawk327ml/luna-dining-3d",
     live: "https://hawk327ml.github.io/luna-dining-3d/",
     accent: "#1F6B58",
-    image: "/thumbs/luna.png",
+    image: "/thumbs/luna.svg",
   },
   {
     id: "03",

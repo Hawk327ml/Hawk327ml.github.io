@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-label="Luna Dining preview">
+  <defs>
+    <linearGradient id="ln-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c1210"/>
+      <stop offset="50%" stop-color="#121916"/>
+      <stop offset="100%" stop-color="#1a332c"/>
+    </linearGradient>
+    <radialGradient id="ln-glow" cx="78%" cy="18%" r="50%">
+      <stop offset="0%" stop-color="#1f6b58" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#1f6b58" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ln-gold" cx="22%" cy="80%" r="40%">
+      <stop offset="0%" stop-color="#c9a227" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#c9a227" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="600" fill="url(#ln-bg)"/>
+  <rect width="960" height="600" fill="url(#ln-glow)"/>
+  <rect width="960" height="600" fill="url(#ln-gold)"/>
+
+  <g opacity="0.12" stroke="#e7eeeb" stroke-width="1">
+    <path d="M0 120 H960 M0 240 H960 M0 360 H960 M0 480 H960"/>
+    <path d="M120 0 V600 M240 0 V600 M360 0 V600 M480 0 V600 M600 0 V600 M720 0 V600 M840 0 V600"/>
+  </g>
+
+  <!-- floor -->
+  <rect x="120" y="220" width="720" height="290" rx="18" fill="#16201c" stroke="#2a3832" stroke-width="2"/>
+
+  <!-- counter -->
+  <rect x="520" y="250" width="260" height="56" rx="8" fill="#1f6b58"/>
+  <rect x="512" y="240" width="276" height="16" rx="4" fill="#d5b179"/>
+  <rect x="545" y="228" width="48" height="14" rx="2" fill="#c14335"/>
+  <rect x="610" y="228" width="48" height="14" rx="2" fill="#f2b705"/>
+  <rect x="675" y="228" width="48" height="14" rx="2" fill="#304338"/>
+
+  <!-- tables: available / selected / booked -->
+  <g>
+    <ellipse cx="260" cy="340" rx="48" ry="28" fill="#8b5a36"/>
+    <text x="260" y="346" text-anchor="middle" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700">1</text>
+    <rect x="230" y="368" width="22" height="18" rx="3" fill="#304338"/>
+    <rect x="268" y="368" width="22" height="18" rx="3" fill="#304338"/>
+  </g>
+  <g>
+    <ellipse cx="420" cy="330" rx="48" ry="28" fill="#f2b705"/>
+    <text x="420" y="336" text-anchor="middle" fill="#211f1c" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700">2</text>
+    <circle cx="420" cy="330" r="58" fill="none" stroke="#f2b705" stroke-width="3" opacity="0.45"/>
+  </g>
+  <g>
+    <ellipse cx="580" cy="360" rx="48" ry="28" fill="#c14335"/>
+    <text x="580" y="366" text-anchor="middle" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700">3</text>
+  </g>
+  <g>
+    <rect x="220" y="430" width="120" height="40" rx="8" fill="#8b5a36"/>
+    <text x="280" y="456" text-anchor="middle" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700">4</text>
+  </g>
+  <g>
+    <ellipse cx="430" cy="460" rx="42" ry="24" fill="#8b5a36"/>
+    <text x="430" y="466" text-anchor="middle" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700">5</text>
+  </g>
+  <g>
+    <rect x="540" y="440" width="130" height="42" rx="8" fill="#8b5a36"/>
+    <text x="605" y="468" text-anchor="middle" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700">6</text>
+  </g>
+
+  <!-- legend chips -->
+  <rect x="700" y="430" width="14" height="14" rx="3" fill="#8b5a36"/>
+  <text x="722" y="442" fill="#e7eeeb" font-family="Helvetica, Arial, sans-serif" font-size="13">Open</text>
+  <rect x="700" y="456" width="14" height="14" rx="3" fill="#f2b705"/>
+  <text x="722" y="468" fill="#e7eeeb" font-family="Helvetica, Arial, sans-serif" font-size="13">Selected</text>
+  <rect x="700" y="482" width="14" height="14" rx="3" fill="#c14335"/>
+  <text x="722" y="494" fill="#e7eeeb" font-family="Helvetica, Arial, sans-serif" font-size="13">Booked</text>
+
+  <text x="56" y="78" fill="#e7eeeb" font-family="Georgia, serif" font-size="42" font-weight="700">Luna Dining</text>
+  <text x="56" y="112" fill="#c9a227" font-family="Helvetica, Arial, sans-serif" font-size="16" letter-spacing="3" font-weight="700">3D TABLE RESERVATION</text>
+</svg>
