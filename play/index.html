@@ -65,7 +65,7 @@
     <div id="mode-pick" class="mode-pick" hidden>
       <p class="mode-kicker">Choose Route</p>
       <h1 class="mode-title">ORB COURIER</h1>
-      <p class="mode-how">黄块拾取 → 橙柱送达 · 跟着绿箭头</p>
+      <p class="mode-how">黄块拾取 → 橙柱送达</p>
       <p class="mode-status" id="engine-status">引擎加载中…</p>
       <div class="mode-grid">
         <button type="button" class="mode-card is-recommend" data-mode="classic" disabled>
@@ -78,7 +78,7 @@
         </button>
         <button type="button" class="mode-card" data-mode="timed" disabled>
           <span class="mode-name">Timed</span>
-          <span class="mode-meta">3 parcels · 105s limit</span>
+          <span class="mode-meta">3 parcels · 90s limit</span>
         </button>
       </div>
     </div>
@@ -98,8 +98,8 @@
         </div>
       </header>
 
-      <p class="hint" id="hint">黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺</p>
-      <p class="coach" id="coach" hidden>绿箭头指路 · 左摇杆移动 · 点右下冲刺</p>
+      <p class="hint" id="hint">跟着绿箭头</p>
+      <p class="coach" id="coach" hidden>冲向黄块</p>
       <p class="proximity" id="proximity" hidden>靠近即可拾取</p>
       <p class="toast" id="toast" hidden></p>
       <div class="edge-arrow" id="edge" hidden aria-hidden="true"></div>
@@ -135,8 +135,10 @@
           </div>
         </dl>
         <p class="result-note" id="result-note" hidden>NEW BEST</p>
+        <p class="result-share-status" id="share-status" hidden>已复制成绩</p>
         <div class="result-actions">
           <button type="button" class="btn-primary" id="restart">再来一局 · R</button>
+          <button type="button" class="btn-ghost" id="share-result">复制成绩</button>
           <button type="button" class="btn-ghost" id="change-mode">换路线</button>
           <a class="btn-ghost" href="/">回作品集</a>
         </div>

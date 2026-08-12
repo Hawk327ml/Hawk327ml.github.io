@@ -11,8 +11,9 @@ const SURFACE = PLANET_R + 0.18;
 const NEAR_RANGE = 2.55;
 const ACCEL = 12;
 const DECEL = 14;
-const TIME_LIMIT = 105;
+const TIME_LIMIT = 90;
 const STICK_SPRINT = 0.72;
+const STICK_DEADZONE = 0.14;
 const LEAN = isLeanDevice();
 const PICK_RANGE = LEAN ? 1.28 : 1.12;
 
@@ -35,7 +36,7 @@ const MODE_META: Record<
 > = {
   classic: { label: "Classic", tag: "CLASSIC", goals: 3, blurb: "free run" },
   challenge: { label: "Challenge", tag: "CHALLENGE", goals: 4, blurb: "long route" },
-  timed: { label: "Timed", tag: "TIMED", goals: 3, blurb: "105s limit" },
+  timed: { label: "Timed", tag: "TIMED", goals: 3, blurb: "90s limit" },
 };
 
 const canvas = document.querySelector<HTMLCanvasElement>("#c");
@@ -60,6 +61,8 @@ const resultParcels = document.querySelector<HTMLElement>("#result-parcels");
 const resultTime = document.querySelector<HTMLElement>("#result-time");
 const resultBest = document.querySelector<HTMLElement>("#result-best");
 const resultNote = document.querySelector<HTMLParagraphElement>("#result-note");
+const shareResultNode = document.querySelector<HTMLButtonElement>("#share-result");
+const shareStatusNode = document.querySelector<HTMLParagraphElement>("#share-status");
 const modePickNode = document.querySelector<HTMLDivElement>("#mode-pick");
 const modeTagNode = document.querySelector<HTMLParagraphElement>("#mode-tag");
 const changeModeNode = document.querySelector<HTMLButtonElement>("#change-mode");
@@ -89,6 +92,8 @@ if (
   !resultTime ||
   !resultBest ||
   !resultNote ||
+  !shareResultNode ||
+  !shareStatusNode ||
   !modePickNode ||
   !modeTagNode ||
   !changeModeNode ||
@@ -119,6 +124,8 @@ const resultParcelsEl = resultParcels;
 const resultTimeEl = resultTime;
 const resultBestEl = resultBest;
 const resultNoteEl = resultNote;
+const shareResultBtn = shareResultNode;
+const shareStatusEl = shareStatusNode;
 const modePickEl = modePickNode;
 const modeTagEl = modeTagNode;
 const changeModeBtn = changeModeNode;
@@ -274,6 +281,8 @@ let lastEdgeKey = "";
 let reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let audioCtx: AudioContext | null = null;
+let shareLine = "";
+let shareStatusTimer = 0;
 
 placeOnSphere(courier.root, worldY, facing);
 camera.position
@@ -294,6 +303,9 @@ restartBtn.addEventListener("click", () => {
   resetRun(true);
 });
 changeModeBtn.addEventListener("click", openModePick);
+shareResultBtn.addEventListener("click", () => {
+  void copyShareLine();
+});
 modePickEl.querySelectorAll<HTMLButtonElement>("[data-mode]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const mode = btn.dataset.mode;
@@ -349,9 +361,14 @@ function tick() {
     if (currentMode === "timed" && runTime >= TIME_LIMIT) {
       finishRun(false);
     } else if (runTime > idleHintAt && delivered === 0 && !carrying) {
-      hintEl.textContent = "跟着绿色箭头 / 屏幕边缘三角找黄块";
+      hintEl.textContent = "跟着绿箭头找黄块";
       idleHintAt = Number.POSITIVE_INFINITY;
     }
+  }
+
+  if (shareStatusTimer > 0) {
+    shareStatusTimer -= dt;
+    if (shareStatusTimer <= 0) shareStatusEl.hidden = true;
   }
 
   if (coachTimer > 0) {
@@ -450,8 +467,12 @@ function updateMovement(dt: number) {
 
   move.set(0, 0, 0);
   if (stick.active) {
-    move.addScaledVector(forward, stick.y);
-    move.addScaledVector(right, stick.x);
+    const mag = Math.hypot(stick.x, stick.y);
+    if (mag > STICK_DEADZONE) {
+      const gain = (mag - STICK_DEADZONE) / (1 - STICK_DEADZONE);
+      move.addScaledVector(forward, (stick.y / mag) * gain);
+      move.addScaledVector(right, (stick.x / mag) * gain);
+    }
   } else {
     if (keys.forward) move.add(forward);
     if (keys.back) move.sub(forward);
@@ -547,8 +568,8 @@ function updateJobs() {
         fovPunch = FOV_PUNCH;
         beep(520, 0.06, "triangle");
         showToast("PICKED UP");
-        setObjective("DELIVER TO ORANGE BEAM");
-        hintEl.textContent = "冲刺到橙光柱 · Shift";
+        setObjective("DELIVER TO ORANGE");
+        hintEl.textContent = touchIsPrimary() ? "冲向橙光柱" : "冲向橙光柱 · Shift";
         refreshJobVisibility();
       }
     } else if (job.held) {
@@ -586,14 +607,18 @@ function finishRun(won: boolean) {
   hideCoach();
   resetStick();
   timerEl.classList.remove("is-urgent");
+  shareStatusEl.hidden = true;
+  shareStatusTimer = 0;
 
   const goals = goalCount();
   const mode = currentMode ?? "classic";
+  const timeShown =
+    mode === "timed" ? Math.min(runTime, TIME_LIMIT) : runTime;
   resultModeEl.textContent = MODE_META[mode].label;
   resultParcelsEl.textContent = `${delivered} / ${goals}`;
-  resultTimeEl.textContent =
-    mode === "timed" ? formatTime(Math.min(runTime, TIME_LIMIT)) : formatTime(runTime);
+  resultTimeEl.textContent = formatTime(timeShown);
 
+  let isNew = false;
   if (won) {
     resultKickerEl.textContent = "Route Clear";
     resultKickerEl.classList.remove("is-fail");
@@ -603,7 +628,7 @@ function finishRun(won: boolean) {
     hintEl.textContent = "";
 
     const best = readBest(mode);
-    const isNew = best === null || runTime < best;
+    isNew = best === null || runTime < best;
     if (isNew) writeBest(mode, runTime);
     const shown = readBest(mode) ?? runTime;
     resultBestEl.textContent = formatTime(shown);
@@ -625,6 +650,7 @@ function finishRun(won: boolean) {
     window.setTimeout(() => beep(160, 0.16, "sawtooth"), 110);
   }
 
+  shareLine = buildShareLine(won, mode, timeShown, goals, isNew);
   refreshBestHud();
   resultEl.hidden = false;
   clearKeys();
@@ -796,7 +822,7 @@ function resetRun(announce: boolean) {
   started = false;
   runTime = 0;
   lastTimerSec = -1;
-  idleHintAt = 3.5;
+  idleHintAt = 5;
   speed = 0;
   camVel.set(0, 0, 0);
   fovPunch = 0;
@@ -812,6 +838,8 @@ function resetRun(announce: boolean) {
   resultEl.hidden = true;
   edgeEl.hidden = true;
   proximityEl.hidden = true;
+  shareStatusEl.hidden = true;
+  shareStatusTimer = 0;
   timerEl.classList.remove("is-urgent");
 
   const goals = goalCount();
@@ -822,15 +850,10 @@ function resetRun(announce: boolean) {
     timerEl.textContent = "0:00";
   }
   modeTagEl.textContent = MODE_META[currentMode].tag;
-  setObjective("FIND YELLOW PACKAGE");
-  const touchHint = window.matchMedia("(hover: none), (max-width: 820px)").matches;
+  setObjective("GO TO YELLOW");
+  const touchHint = touchIsPrimary();
   hintEl.textContent =
-    currentMode === "timed"
-      ? `限时 ${TIME_LIMIT}s · 黄块拾取 · 橙柱送达`
-      : "黄块 = 包裹 · 橙柱 = 送达点";
-  if (!touchHint) {
-    hintEl.textContent += " · WASD + Shift";
-  }
+    currentMode === "timed" ? `限时 ${TIME_LIMIT}s · 跟着绿箭头` : "跟着绿箭头";
 
   for (const job of jobs) {
     scene.remove(job.pickupMesh, job.pickupRing, job.dropMesh, job.dropLight, job.dropRing);
@@ -856,7 +879,7 @@ function resetRun(announce: boolean) {
 
   if (announce) {
     beep(360, 0.05, "triangle");
-    showToast(currentMode === "timed" ? "GO · 105s" : "GO · FOLLOW GREEN");
+    showToast(currentMode === "timed" ? `GO · ${TIME_LIMIT}s` : "冲向黄块");
   }
 }
 
@@ -1348,16 +1371,37 @@ function resetStick() {
 }
 
 function showCoach(touchHint: boolean) {
-  coachEl.textContent = touchHint
-    ? "绿箭头指路 · 左摇杆移动 · 点右下冲刺"
-    : "绿箭头指路 · WASD 移动 · Shift 冲刺";
+  coachEl.textContent = touchHint ? "摇杆冲向黄块" : "冲向黄块 · WASD";
   coachEl.hidden = false;
-  coachTimer = 5;
+  coachTimer = 3.8;
 }
 
 function hideCoach() {
   coachTimer = 0;
   coachEl.hidden = true;
+}
+
+function buildShareLine(
+  won: boolean,
+  mode: ModeId,
+  timeSec: number,
+  goals: number,
+  isNew: boolean,
+) {
+  const tag = won ? (isNew ? "NEW BEST" : "CLEAR") : "TIME UP";
+  return `ORB COURIER · ${MODE_META[mode].label} · ${formatTime(timeSec)} · ${delivered}/${goals} · ${tag}\nhttps://Hawk327ml.github.io/play/`;
+}
+
+async function copyShareLine() {
+  if (!shareLine) return;
+  try {
+    await navigator.clipboard.writeText(shareLine);
+    shareStatusEl.textContent = "已复制成绩";
+  } catch {
+    shareStatusEl.textContent = "复制失败 · 请手动截图";
+  }
+  shareStatusEl.hidden = false;
+  shareStatusTimer = 2.4;
 }
 
 function faceFirstTarget() {
@@ -1431,6 +1475,10 @@ function bindTouch() {
 
 function setObjective(text: string) {
   objectiveEl.textContent = text;
+}
+
+function touchIsPrimary() {
+  return window.matchMedia("(hover: none), (max-width: 820px)").matches;
 }
 
 function showToast(text: string) {
