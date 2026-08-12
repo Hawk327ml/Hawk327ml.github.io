@@ -184,6 +184,24 @@ const sea = new THREE.Mesh(
 sea.scale.setScalar(0.97);
 scene.add(sea);
 
+// Scratch math must exist before landmarks/courier — placeLandmark → alignObject/tangentOf.
+const up = new THREE.Vector3(0, 1, 0);
+const forward = new THREE.Vector3();
+const right = new THREE.Vector3();
+const move = new THREE.Vector3();
+const camDesired = new THREE.Vector3();
+const camLook = new THREE.Vector3();
+const camVel = new THREE.Vector3();
+const tmp = new THREE.Vector3();
+const tmp2 = new THREE.Vector3();
+const tmp3 = new THREE.Vector3();
+const ndc = new THREE.Vector3();
+const qAlign = new THREE.Quaternion();
+const mAlign = new THREE.Matrix4();
+const camForward = new THREE.Vector3();
+const worldY = new THREE.Vector3(0, 1, 0);
+let facing = new THREE.Vector3(0, 0, 1);
+
 addStars();
 const clouds = addClouds();
 addLandPatches();
@@ -236,24 +254,6 @@ const keys = {
 const stick = { x: 0, y: 0, active: false, pointerId: -1 };
 let sprintToggle = false;
 let coachTimer = 0;
-
-const up = new THREE.Vector3(0, 1, 0);
-const forward = new THREE.Vector3();
-const right = new THREE.Vector3();
-const move = new THREE.Vector3();
-const camDesired = new THREE.Vector3();
-const camLook = new THREE.Vector3();
-const camVel = new THREE.Vector3();
-const tmp = new THREE.Vector3();
-const tmp2 = new THREE.Vector3();
-const tmp3 = new THREE.Vector3();
-const ndc = new THREE.Vector3();
-const qAlign = new THREE.Quaternion();
-const mAlign = new THREE.Matrix4();
-const camForward = new THREE.Vector3();
-const worldY = new THREE.Vector3(0, 1, 0);
-
-let facing = new THREE.Vector3(0, 0, 1);
 let speed = 0;
 let carrying = false;
 let delivered = 0;
