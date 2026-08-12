@@ -28,7 +28,7 @@ export const projects: Project[] = [
   {
     id: "01",
     title: "FocusSpace",
-    tagline: "可点开的 3D 书房：物件交互、日夜切换、番茄钟——沉浸式专注场景。",
+    tagline: "可点开的 3D 书房：点物件切模式、日夜切换、番茄钟（GitHub Pages Live）。",
     stack: ["React", "R3F", "Three.js"],
     repo: "https://github.com/Hawk327ml/focusspace-3d",
     live: "https://hawk327ml.github.io/focusspace-3d/",
@@ -40,7 +40,7 @@ export const projects: Project[] = [
   {
     id: "02",
     title: "Luna Dining",
-    tagline: "3D 餐厅里完成选桌与预订流程演示，适合展示空间交互叙事。",
+    tagline: "3D 选桌 + 预订表单，localStorage 演示（GitHub Pages Live）。",
     stack: ["React", "R3F", "Three.js"],
     repo: "https://github.com/Hawk327ml/luna-dining-3d",
     live: "https://hawk327ml.github.io/luna-dining-3d/",
