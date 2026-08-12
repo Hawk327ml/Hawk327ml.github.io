@@ -172,6 +172,14 @@ body {
   color: var(--muted);
 }
 
+.best {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(242, 239, 230, 0.45);
+}
+
 .hint {
   margin: 0.75rem 0 0;
   max-width: 28rem;
@@ -335,9 +343,9 @@ body {
 
 .result-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 0.75rem;
-  margin: 1.35rem 0 1.5rem;
+  margin: 1.35rem 0 1rem;
 }
 
 .result-stats div {
@@ -356,8 +364,16 @@ body {
 .result-stats dd {
   margin: 0.25rem 0 0;
   font-family: var(--font-display);
-  font-size: 1.7rem;
+  font-size: clamp(1.35rem, 4vw, 1.7rem);
   letter-spacing: 0.06em;
+}
+
+.result-note {
+  margin: 0 0 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.16em;
+  color: var(--ok);
 }
 
 .result-actions {
@@ -365,6 +381,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.65rem;
+  margin-top: 0.35rem;
 }
 
 .btn-primary,

@@ -12,6 +12,7 @@ const SURFACE = PLANET_R + 0.18;
 const PICK_RANGE = 1.05;
 const NEAR_RANGE = 2.4;
 const LEAN = isLeanDevice();
+const BEST_KEY = "orb-courier-best-sec";
 
 type Job = {
   id: number;
@@ -36,10 +37,13 @@ const hudNode = document.querySelector<HTMLDivElement>("#hud");
 const objectiveNode = document.querySelector<HTMLParagraphElement>("#objective");
 const proximityNode = document.querySelector<HTMLParagraphElement>("#proximity");
 const timerNode = document.querySelector<HTMLParagraphElement>("#timer");
+const bestNode = document.querySelector<HTMLParagraphElement>("#best");
 const edgeNode = document.querySelector<HTMLDivElement>("#edge");
 const resultNode = document.querySelector<HTMLDivElement>("#result");
 const resultParcels = document.querySelector<HTMLElement>("#result-parcels");
 const resultTime = document.querySelector<HTMLElement>("#result-time");
+const resultBest = document.querySelector<HTMLElement>("#result-best");
+const resultNote = document.querySelector<HTMLParagraphElement>("#result-note");
 
 if (
   !canvas ||
@@ -54,10 +58,13 @@ if (
   !objectiveNode ||
   !proximityNode ||
   !timerNode ||
+  !bestNode ||
   !edgeNode ||
   !resultNode ||
   !resultParcels ||
-  !resultTime
+  !resultTime ||
+  !resultBest ||
+  !resultNote
 ) {
   throw new Error("play HUD mounts missing");
 }
@@ -73,10 +80,13 @@ const hudEl = hudNode;
 const objectiveEl = objectiveNode;
 const proximityEl = proximityNode;
 const timerEl = timerNode;
+const bestEl = bestNode;
 const edgeEl = edgeNode;
 const resultEl = resultNode;
 const resultParcelsEl = resultParcels;
 const resultTimeEl = resultTime;
+const resultBestEl = resultBest;
+const resultNoteEl = resultNote;
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -132,6 +142,7 @@ scene.add(sea);
 
 const clouds = addClouds();
 addLandPatches();
+addLandmarks();
 
 const courier = buildCourier();
 scene.add(courier.root);
@@ -202,7 +213,10 @@ let dustCooldown = 0;
 let lastEdgeKey = "";
 let reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+let audioCtx: AudioContext | null = null;
+
 resetRun(false);
+refreshBestHud();
 
 window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
@@ -358,6 +372,7 @@ function updateJobs() {
         job.pickupRing.visible = false;
         courier.parcel.visible = true;
         burstDust(1.2);
+        beep(520, 0.06, "triangle");
         showToast("PICKED UP");
         setObjective("DELIVER TO ORANGE BEAM");
         hintEl.textContent = "冲刺到橙光柱 · Shift";
@@ -372,6 +387,7 @@ function updateJobs() {
         courier.parcel.visible = false;
         hideJob(job);
         burstDust(1.8);
+        beep(680, 0.07, "square");
         scoreEl.textContent = `${delivered} / ${GOAL_COUNT}`;
 
         if (delivered >= GOAL_COUNT) {
@@ -397,6 +413,18 @@ function finishRun() {
   hintEl.textContent = "";
   resultParcelsEl.textContent = `${GOAL_COUNT} / ${GOAL_COUNT}`;
   resultTimeEl.textContent = formatTime(runTime);
+
+  const best = readBest();
+  const isNew = best === null || runTime < best;
+  if (isNew) writeBest(runTime);
+  const shown = readBest() ?? runTime;
+  resultBestEl.textContent = formatTime(shown);
+  resultNoteEl.hidden = !isNew;
+  refreshBestHud();
+  beep(440, 0.08, "sine");
+  window.setTimeout(() => beep(660, 0.1, "sine"), 90);
+  window.setTimeout(() => beep(880, 0.12, "sine"), 180);
+
   resultEl.hidden = false;
   clearKeys();
 }
@@ -597,8 +625,13 @@ function resetRun(announce: boolean) {
   camera.updateProjectionMatrix();
   camera.lookAt(courier.root.position);
   clearKeys();
+  refreshBestHud();
+  resultNoteEl.hidden = true;
 
-  if (announce) showToast("NEW ROUTE");
+  if (announce) {
+    beep(360, 0.05, "triangle");
+    showToast("NEW ROUTE");
+  }
 }
 
 function createJobs(): Job[] {
@@ -832,7 +865,6 @@ function addLandPatches() {
     roughness: 0.9,
   });
   const count = LEAN ? 10 : 16;
-  // Fixed-ish distribution so the planet looks stable across reloads.
   for (let i = 0; i < count; i++) {
     const patch = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.55 + (i % 5) * 0.12, 0),
@@ -844,6 +876,64 @@ function addLandPatches() {
     patch.rotateX(Math.PI / 2);
     planet.add(patch);
   }
+}
+
+function addLandmarks() {
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: "#dfe7f2",
+    flatShading: true,
+    roughness: 0.65,
+  });
+  const roofMat = new THREE.MeshStandardMaterial({
+    color: "#ff6b3d",
+    flatShading: true,
+    roughness: 0.45,
+  });
+  const darkMat = new THREE.MeshStandardMaterial({
+    color: "#2b3a48",
+    flatShading: true,
+    roughness: 0.7,
+  });
+
+  placeLandmark(latLon(8, 10), (root) => {
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.45, 1.35, 0.45), bodyMat);
+    tower.position.y = 0.68;
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.42, 5), roofMat);
+    cap.position.y = 1.52;
+    root.add(tower, cap);
+  });
+
+  placeLandmark(latLon(-22, -95), (root) => {
+    const base = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 0.7), darkMat);
+    base.position.y = 0.18;
+    const shed = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.48, 0.55), bodyMat);
+    shed.position.y = 0.52;
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.12, 0.68), roofMat);
+    roof.position.y = 0.82;
+    root.add(base, shed, roof);
+  });
+
+  placeLandmark(latLon(35, 155), (root) => {
+    const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.12, 8), darkMat);
+    pad.position.y = 0.06;
+    const dish = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), bodyMat);
+    dish.position.y = 0.28;
+    dish.rotation.x = Math.PI;
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.55, 6), roofMat);
+    pole.position.y = 0.45;
+    root.add(pad, dish, pole);
+  });
+}
+
+function placeLandmark(normal: THREE.Vector3, build: (root: THREE.Group) => void) {
+  const root = new THREE.Group();
+  build(root);
+  const n = normal.clone().normalize();
+  root.position.copy(n).multiplyScalar(PLANET_R + 0.02);
+  alignObject(root, n, tangentOf(n));
+  // Snap quaternion fully so buildings don't start mid-slerp.
+  root.quaternion.copy(qAlign);
+  scene.add(root);
 }
 
 function addClouds() {
@@ -974,6 +1064,44 @@ function formatTime(sec: number) {
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${m}:${r.toString().padStart(2, "0")}`;
+}
+
+function readBest(): number | null {
+  const raw = localStorage.getItem(BEST_KEY);
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function writeBest(sec: number) {
+  localStorage.setItem(BEST_KEY, String(sec));
+}
+
+function refreshBestHud() {
+  const best = readBest();
+  bestEl.textContent = best === null ? "BEST —" : `BEST ${formatTime(best)}`;
+}
+
+function beep(freq: number, dur: number, type: OscillatorType) {
+  if (reduceMotion) return;
+  try {
+    if (!audioCtx) audioCtx = new AudioContext();
+    if (audioCtx.state === "suspended") void audioCtx.resume();
+    const t0 = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.05, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  } catch {
+    // Autoplay / AudioContext unsupported — ignore.
+  }
 }
 
 function onResize() {

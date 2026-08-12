@@ -15,7 +15,7 @@ export const projects: Project[] = [
     id: "00",
     title: "Orb Courier — Mini Planet Demo",
     tagline:
-      "作品集可玩页：小星球曲面送货、冲刺与目标指引，3 单结算。Messenger 气质的简化实装（Vanilla Three.js）。",
+      "作品集可玩页：小星球送货、地标、最佳用时、轻音效。Messenger 气质的简化实装（Vanilla Three.js）。",
     stack: ["Playable", "Three.js", "Vite", "TypeScript"],
     repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
     live: "/play/",
