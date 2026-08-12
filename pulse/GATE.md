@@ -2,8 +2,7 @@
 
 ## 当前状态
 
-- **成片已验收**（Ring Stage 重建）并已进入 Selected Work
-- Featured 仍以 Orb Courier 为主推；PULSEFIELD **未**挂 Featured
+- **成片已验收**（Ring Stage 重建）并已进入 Selected Work + Featured
 - `/pulse/`：无 Draft 条；meters 仅 `?debug=1`
 
 ## 历史口令（已执行）

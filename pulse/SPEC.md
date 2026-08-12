@@ -56,8 +56,7 @@ Meters: hidden unless `?debug=1`.
 
 | Phase | Track | Note |
 |-------|-------|------|
-| Draft / gate | `pulse-a.wav` / `pulse-b.wav` | 自合成 placeholder，仅测分析 |
-| Ship | 替换为可合法展示的短曲（CC0 / 自制），更新 [CREDITS](../public/audio/CREDITS.md) | 禁止无授权流行歌 |
+| Ship | `pulse-a.wav` / `pulse-b.wav` | 自制程序合成循环；见 [CREDITS](../public/audio/CREDITS.md) |
 
 ## Out of scope (v1)
 

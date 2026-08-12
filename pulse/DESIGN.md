@@ -1,7 +1,7 @@
 # PULSEFIELD — Design Note (Phase 0 · LOCKED)
 
 > Status: **SHIPPED**（Ring Stage）  
-> Featured 仍以 Orb 为主推；本页已验收上线。
+> Selected Work + Featured；音轨为自制可展示循环。
 
 ## Positioning（已锁定）
 

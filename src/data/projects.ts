@@ -110,6 +110,7 @@ export const projects: Project[] = [
     live: "/pulse/",
     accent: "#3EE0B8",
     image: "/thumbs/pulsefield.svg",
+    featured: true,
     tier: "selected",
   },
 ];

@@ -2,7 +2,8 @@
 
 | File | Role | License |
 |------|------|---------|
-| `pulse-a.wav` | Primary loop (~32s, 112 BPM) | Original synthesis for PULSEFIELD (Hawk327ml) — free to use with this project |
-| `pulse-b.wav` | Alternate loop (~28s, 96 BPM) | Same |
+| `pulse-a.wav` | Primary loop (~17s, 112 BPM) | Original composition for PULSEFIELD (Hawk327ml) — free to use with this project |
+| `pulse-b.wav` | Alternate loop (~17s, 96 BPM) | Same |
 
-Generated procedurally (kick / snare / hat / bass / arp). No third-party samples.
+Procedural synth (kick / snare / hat / sub / arp / pad). No third-party samples.  
+Regenerate: `python scripts/gen_pulse_tracks.py`
