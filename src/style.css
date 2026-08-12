@@ -280,6 +280,23 @@ section {
   background: linear-gradient(90deg, rgba(200, 245, 66, 0.05), transparent 55%);
 }
 
+.project.is-featured {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--project-accent, var(--accent)) 12%, transparent),
+    transparent 58%
+  );
+}
+
+.project-badge {
+  margin: 0 0 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--project-accent, var(--accent));
+}
+
 .project-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(160px, 240px);

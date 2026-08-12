@@ -49,35 +49,39 @@ app.innerHTML = `
       </div>
       <div class="projects">
         ${projects
-          .map(
-            (p) => `
-          <article class="project" style="--project-accent: ${p.accent}" data-reveal>
+          .map((p) => {
+            const href = p.live ?? p.repo;
+            const external = !p.live || p.live.startsWith("http");
+            const extAttrs = external ? 'target="_blank" rel="noreferrer"' : "";
+            return `
+          <article class="project${p.featured ? " is-featured" : ""}" style="--project-accent: ${p.accent}" data-reveal>
             <div class="project-id">${p.id}</div>
             <div class="project-body">
               <div class="project-copy">
+                ${p.featured ? `<p class="project-badge">Featured Playable</p>` : ""}
                 <h3 class="project-title">
-                  <a href="${p.live ?? p.repo}" ${p.live?.startsWith("http") || !p.live ? 'target="_blank" rel="noreferrer"' : ""}>${p.title}</a>
+                  <a href="${href}" ${extAttrs}>${p.title}</a>
                 </h3>
                 <p class="project-tagline">${p.tagline}</p>
                 <ul class="project-stack">
                   ${p.stack.map((s) => `<li>${s}</li>`).join("")}
                 </ul>
               </div>
-              <a class="project-media" href="${p.live ?? p.repo}" target="_blank" rel="noreferrer" aria-label="${p.title} preview">
+              <a class="project-media" href="${href}" ${extAttrs} aria-label="${p.title} preview">
                 <img src="${p.image}" alt="" loading="lazy" />
               </a>
             </div>
             <div class="project-links">
               ${
                 p.live
-                  ? `<a href="${p.live}" target="_blank" rel="noreferrer">Live ↗</a>`
+                  ? `<a href="${p.live}" ${p.live.startsWith("/") ? "" : 'target="_blank" rel="noreferrer"'}>Live ↗</a>`
                   : ""
               }
               <a href="${p.repo}" target="_blank" rel="noreferrer">Code ↗</a>
             </div>
           </article>
-        `,
-          )
+        `;
+          })
           .join("")}
       </div>
     </section>

@@ -7,6 +7,7 @@ export type Project = {
   live?: string;
   accent: string;
   image: string;
+  featured?: boolean;
 };
 
 export const projects: Project[] = [
@@ -14,12 +15,13 @@ export const projects: Project[] = [
     id: "00",
     title: "Orb Courier — Mini Planet Demo",
     tagline:
-      "Messenger 气质简化版：小星球曲面移动、拾取/配送 2 单，30 秒可玩。Vanilla Three.js。",
-    stack: ["Three.js", "Vite", "TypeScript"],
+      "作品集可玩页：小星球曲面送货、冲刺与目标指引，3 单结算。Messenger 气质的简化实装（Vanilla Three.js）。",
+    stack: ["Playable", "Three.js", "Vite", "TypeScript"],
     repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
     live: "/play/",
     accent: "#FF6B3D",
     image: "/thumbs/orb-courier.svg",
+    featured: true,
   },
   {
     id: "01",
@@ -103,5 +105,5 @@ export const profile = {
   location: "Malaysia",
   github: "https://github.com/Hawk327ml",
   blurb:
-    "计算机多媒体方向学生。做能上线的站点、能复现的数据分析，以及能直接省时间的小工具。",
+    "计算机多媒体方向学生。做能上线的站点、能玩的 3D Web demo、能复现的数据分析，以及能直接省时间的小工具。",
 };

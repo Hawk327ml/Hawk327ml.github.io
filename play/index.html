@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1c3348" />
+    <meta
+      name="description"
+      content="Orb Courier — HAWK 作品集可玩 demo：小星球曲面送货，冲刺、目标指引与结算。"
+    />
+    <meta property="og:title" content="Orb Courier · HAWK" />
+    <meta
+      property="og:description"
+      content="Messenger 气质简化版：30 秒可玩的小星球送货 demo（Vanilla Three.js）。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://Hawk327ml.github.io/thumbs/orb-courier.svg" />
+    <link rel="canonical" href="https://Hawk327ml.github.io/play/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Orb Courier · HAWK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="boot" class="boot" aria-live="polite">
+      <p class="boot-brand">ORB COURIER</p>
+      <div class="boot-bar" aria-hidden="true"><span></span></div>
+      <p class="boot-copy">loading planet…</p>
+    </div>
+
+    <div id="hud" class="hud" hidden>
+      <header class="hud-top">
+        <a class="back" href="/">← HAWK</a>
+        <div class="hud-center">
+          <p class="title">ORB COURIER</p>
+          <p class="objective" id="objective">FIND YELLOW PACKAGE</p>
+        </div>
+        <div class="hud-right">
+          <p class="score" id="score">0 / 3</p>
+          <p class="timer" id="timer">0:00</p>
+        </div>
+      </header>
+
+      <p class="hint" id="hint">黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺</p>
+      <p class="proximity" id="proximity" hidden>靠近即可拾取</p>
+      <p class="toast" id="toast" hidden></p>
+      <div class="edge-arrow" id="edge" hidden aria-hidden="true"></div>
+      <p class="credit">HAWK · Portfolio demo</p>
+
+      <div class="pad pad-move" id="touch" aria-hidden="true">
+        <button type="button" data-dir="forward">↑</button>
+        <div class="pad-row">
+          <button type="button" data-dir="left">←</button>
+          <button type="button" data-dir="back">↓</button>
+          <button type="button" data-dir="right">→</button>
+        </div>
+      </div>
+      <button type="button" class="pad pad-sprint" id="sprint" data-dir="sprint" aria-hidden="true">
+        冲刺
+      </button>
+    </div>
+
+    <div id="result" class="result" hidden>
+      <div class="result-card">
+        <p class="result-kicker">Route Clear</p>
+        <h1 class="result-title">DELIVERED</h1>
+        <dl class="result-stats">
+          <div>
+            <dt>Parcels</dt>
+            <dd id="result-parcels">3 / 3</dd>
+          </div>
+          <div>
+            <dt>Time</dt>
+            <dd id="result-time">0:00</dd>
+          </div>
+        </dl>
+        <div class="result-actions">
+          <button type="button" class="btn-primary" id="restart">再来一局 · R</button>
+          <a class="btn-ghost" href="/">回作品集</a>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="c"></canvas>
+    <script type="module" src="/src/play/main.ts"></script>
+  </body>
+</html>
