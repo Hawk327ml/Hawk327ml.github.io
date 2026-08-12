@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: resolve(root, "index.html"),
         play: resolve(root, "play/index.html"),
+        pulse: resolve(root, "pulse/index.html"),
       },
       output: {
         manualChunks(id) {

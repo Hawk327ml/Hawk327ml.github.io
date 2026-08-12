@@ -8,14 +8,15 @@ const CAM_LERP = 8.2;
 const FOV_BASE = 48;
 const FOV_SPRINT = 58;
 const FOV_PUNCH = 4.5;
-const GOAL_COUNT = 3;
 const SURFACE = PLANET_R + 0.18;
 const PICK_RANGE = 1.12;
 const NEAR_RANGE = 2.55;
 const ACCEL = 12;
 const DECEL = 14;
+const TIME_LIMIT = 90;
 const LEAN = isLeanDevice();
-const BEST_KEY = "orb-courier-best-sec";
+
+type ModeId = "classic" | "challenge" | "timed";
 
 type Job = {
   id: number;
@@ -26,6 +27,15 @@ type Job = {
   dropRing: THREE.Mesh;
   held: boolean;
   done: boolean;
+};
+
+const MODE_META: Record<
+  ModeId,
+  { label: string; tag: string; goals: number; blurb: string }
+> = {
+  classic: { label: "Classic", tag: "CLASSIC", goals: 3, blurb: "free run" },
+  challenge: { label: "Challenge", tag: "CHALLENGE", goals: 4, blurb: "long route" },
+  timed: { label: "Timed", tag: "TIMED", goals: 3, blurb: "90s limit" },
 };
 
 const canvas = document.querySelector<HTMLCanvasElement>("#c");
@@ -47,6 +57,12 @@ const resultParcels = document.querySelector<HTMLElement>("#result-parcels");
 const resultTime = document.querySelector<HTMLElement>("#result-time");
 const resultBest = document.querySelector<HTMLElement>("#result-best");
 const resultNote = document.querySelector<HTMLParagraphElement>("#result-note");
+const modePickNode = document.querySelector<HTMLDivElement>("#mode-pick");
+const modeTagNode = document.querySelector<HTMLParagraphElement>("#mode-tag");
+const changeModeNode = document.querySelector<HTMLButtonElement>("#change-mode");
+const resultKickerNode = document.querySelector<HTMLElement>("#result-kicker");
+const resultTitleNode = document.querySelector<HTMLElement>("#result-title");
+const resultModeNode = document.querySelector<HTMLElement>("#result-mode");
 
 if (
   !canvas ||
@@ -67,7 +83,13 @@ if (
   !resultParcels ||
   !resultTime ||
   !resultBest ||
-  !resultNote
+  !resultNote ||
+  !modePickNode ||
+  !modeTagNode ||
+  !changeModeNode ||
+  !resultKickerNode ||
+  !resultTitleNode ||
+  !resultModeNode
 ) {
   throw new Error("play HUD mounts missing");
 }
@@ -90,6 +112,12 @@ const resultParcelsEl = resultParcels;
 const resultTimeEl = resultTime;
 const resultBestEl = resultBest;
 const resultNoteEl = resultNote;
+const modePickEl = modePickNode;
+const modeTagEl = modeTagNode;
+const changeModeBtn = changeModeNode;
+const resultKickerEl = resultKickerNode;
+const resultTitleEl = resultTitleNode;
+const resultModeEl = resultModeNode;
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -104,8 +132,8 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#1c3348");
-scene.fog = new THREE.Fog("#1c3348", 12, 34);
+scene.background = new THREE.Color("#121f2e");
+scene.fog = new THREE.Fog("#152636", 14, 38);
 
 const camera = new THREE.PerspectiveCamera(
   FOV_BASE,
@@ -123,7 +151,7 @@ const planetDetail = LEAN ? 2 : 3;
 const planet = new THREE.Mesh(
   new THREE.IcosahedronGeometry(PLANET_R, planetDetail),
   new THREE.MeshStandardMaterial({
-    color: "#3d8f6e",
+    color: "#347d62",
     flatShading: true,
     roughness: 0.82,
     metalness: 0.05,
@@ -134,15 +162,16 @@ scene.add(planet);
 const sea = new THREE.Mesh(
   new THREE.IcosahedronGeometry(PLANET_R * 0.992, LEAN ? 1 : 2),
   new THREE.MeshStandardMaterial({
-    color: "#2f6f9a",
+    color: "#2a648c",
     flatShading: true,
-    roughness: 0.55,
-    metalness: 0.12,
+    roughness: 0.48,
+    metalness: 0.22,
   }),
 );
 sea.scale.setScalar(0.97);
 scene.add(sea);
 
+addStars();
 const clouds = addClouds();
 addLandPatches();
 addLandmarks();
@@ -167,9 +196,17 @@ const shared = {
   dropRingMat: ringMat("#ff6b3d"),
   beamGeo: new THREE.CylinderGeometry(0.22, 0.55, 2.8, LEAN ? 6 : 8, 1, true),
   beamMat: new THREE.MeshBasicMaterial({
-    color: "#ff6b3d",
+    color: "#ff8a3d",
     transparent: true,
-    opacity: 0.45,
+    opacity: 0.58,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  }),
+  beamHaloGeo: new THREE.CylinderGeometry(0.42, 0.78, 2.55, LEAN ? 6 : 8, 1, true),
+  beamHaloMat: new THREE.MeshBasicMaterial({
+    color: "#ffb078",
+    transparent: true,
+    opacity: 0.22,
     side: THREE.DoubleSide,
     depthWrite: false,
   }),
@@ -208,8 +245,10 @@ let finished = false;
 let started = false;
 let runTime = 0;
 let idleHintAt = 8;
-let jobs = createJobs();
+let jobs: Job[] = [];
 let booted = false;
+let awaitingMode = true;
+let currentMode: ModeId | null = null;
 let lastFov = FOV_BASE;
 let fovPunch = 0;
 let lastTimerSec = -1;
@@ -219,15 +258,33 @@ let reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
 let audioCtx: AudioContext | null = null;
 
-resetRun(false);
-refreshBestHud();
+placeOnSphere(courier.root, worldY, facing);
+camera.position
+  .copy(courier.root.position)
+  .addScaledVector(up.copy(worldY), 3.7)
+  .addScaledVector(facing, -5.1);
+camera.up.copy(worldY);
+camera.lookAt(courier.root.position);
+guide.visible = false;
 
 window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
 window.addEventListener("resize", onResize);
 window.addEventListener("blur", clearKeys);
 document.addEventListener("visibilitychange", onVisibility);
-restartBtn.addEventListener("click", () => resetRun(true));
+restartBtn.addEventListener("click", () => {
+  if (awaitingMode) return;
+  resetRun(true);
+});
+changeModeBtn.addEventListener("click", openModePick);
+modePickEl.querySelectorAll<HTMLButtonElement>("[data-mode]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const mode = btn.dataset.mode;
+    if (mode === "classic" || mode === "challenge" || mode === "timed") {
+      selectMode(mode);
+    }
+  });
+});
 bindTouch();
 
 const clock = new THREE.Clock();
@@ -240,14 +297,12 @@ function tick() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
-  if (booted && started && !finished) {
+  if (booted && !awaitingMode && started && !finished && currentMode) {
     runTime += dt;
-    const sec = Math.floor(runTime);
-    if (sec !== lastTimerSec) {
-      lastTimerSec = sec;
-      timerEl.textContent = formatTime(runTime);
-    }
-    if (runTime > idleHintAt && delivered === 0 && !carrying) {
+    updateTimerHud();
+    if (currentMode === "timed" && runTime >= TIME_LIMIT) {
+      finishRun(false);
+    } else if (runTime > idleHintAt && delivered === 0 && !carrying) {
       hintEl.textContent = "跟着绿色箭头 / 屏幕边缘三角找黄块";
       idleHintAt = Number.POSITIVE_INFINITY;
     }
@@ -276,14 +331,65 @@ function tick() {
     booted = true;
     requestAnimationFrame(() => {
       bootEl.classList.add("is-done");
-      hudEl.hidden = false;
+      modePickEl.hidden = false;
+      hudEl.hidden = true;
       window.setTimeout(() => bootEl.remove(), 480);
     });
   }
 }
 
+function selectMode(mode: ModeId) {
+  currentMode = mode;
+  awaitingMode = false;
+  modePickEl.hidden = true;
+  hudEl.hidden = false;
+  modeTagEl.textContent = MODE_META[mode].tag;
+  resultModeEl.textContent = MODE_META[mode].label;
+  resetRun(true);
+}
+
+function openModePick() {
+  awaitingMode = true;
+  finished = true;
+  started = false;
+  clearKeys();
+  resultEl.hidden = true;
+  hudEl.hidden = true;
+  modePickEl.hidden = false;
+  guide.visible = false;
+  edgeEl.hidden = true;
+  proximityEl.hidden = true;
+  toastEl.hidden = true;
+  timerEl.classList.remove("is-urgent");
+}
+
+function goalCount() {
+  return currentMode ? MODE_META[currentMode].goals : 3;
+}
+
+function updateTimerHud() {
+  if (!currentMode) return;
+
+  if (currentMode === "timed") {
+    const left = Math.max(0, TIME_LIMIT - runTime);
+    const sec = Math.floor(left);
+    if (sec !== lastTimerSec) {
+      lastTimerSec = sec;
+      timerEl.textContent = formatTime(left);
+    }
+    timerEl.classList.toggle("is-urgent", left <= 15);
+  } else {
+    const sec = Math.floor(runTime);
+    if (sec !== lastTimerSec) {
+      lastTimerSec = sec;
+      timerEl.textContent = formatTime(runTime);
+    }
+    timerEl.classList.remove("is-urgent");
+  }
+}
+
 function updateMovement(dt: number) {
-  if (finished) return;
+  if (awaitingMode || finished) return;
 
   up.copy(courier.root.position).normalize();
   camera.getWorldDirection(camForward);
@@ -364,8 +470,9 @@ function updateCamera(dt: number) {
 }
 
 function updateJobs() {
-  if (finished) return;
+  if (awaitingMode || finished) return;
 
+  const goals = goalCount();
   for (const job of jobs) {
     if (job.done) continue;
     const playerPos = courier.root.position;
@@ -396,10 +503,10 @@ function updateJobs() {
         burstDust(1.8);
         fovPunch = FOV_PUNCH * 1.35;
         beep(680, 0.07, "square");
-        scoreEl.textContent = `${delivered} / ${GOAL_COUNT}`;
+        scoreEl.textContent = `${delivered} / ${goals}`;
 
-        if (delivered >= GOAL_COUNT) {
-          finishRun();
+        if (delivered >= goals) {
+          finishRun(true);
         } else {
           showToast("DELIVERED");
           setObjective("FIND NEXT PACKAGE");
@@ -411,34 +518,59 @@ function updateJobs() {
   }
 }
 
-function finishRun() {
+function finishRun(won: boolean) {
+  if (finished) return;
   finished = true;
   guide.visible = false;
   edgeEl.hidden = true;
   proximityEl.hidden = true;
-  showToast("ROUTE CLEAR");
-  setObjective("ROUTE CLEAR");
-  hintEl.textContent = "";
-  resultParcelsEl.textContent = `${GOAL_COUNT} / ${GOAL_COUNT}`;
-  resultTimeEl.textContent = formatTime(runTime);
+  timerEl.classList.remove("is-urgent");
 
-  const best = readBest();
-  const isNew = best === null || runTime < best;
-  if (isNew) writeBest(runTime);
-  const shown = readBest() ?? runTime;
-  resultBestEl.textContent = formatTime(shown);
-  resultNoteEl.hidden = !isNew;
+  const goals = goalCount();
+  const mode = currentMode ?? "classic";
+  resultModeEl.textContent = MODE_META[mode].label;
+  resultParcelsEl.textContent = `${delivered} / ${goals}`;
+  resultTimeEl.textContent =
+    mode === "timed" ? formatTime(Math.min(runTime, TIME_LIMIT)) : formatTime(runTime);
+
+  if (won) {
+    resultKickerEl.textContent = "Route Clear";
+    resultKickerEl.classList.remove("is-fail");
+    resultTitleEl.textContent = "DELIVERED";
+    showToast("ROUTE CLEAR");
+    setObjective("ROUTE CLEAR");
+    hintEl.textContent = "";
+
+    const best = readBest(mode);
+    const isNew = best === null || runTime < best;
+    if (isNew) writeBest(mode, runTime);
+    const shown = readBest(mode) ?? runTime;
+    resultBestEl.textContent = formatTime(shown);
+    resultNoteEl.hidden = !isNew;
+    beep(440, 0.08, "sine");
+    window.setTimeout(() => beep(660, 0.1, "sine"), 90);
+    window.setTimeout(() => beep(880, 0.12, "sine"), 180);
+  } else {
+    resultKickerEl.textContent = "Time Up";
+    resultKickerEl.classList.add("is-fail");
+    resultTitleEl.textContent = "FAILED";
+    showToast("TIME UP");
+    setObjective("FAILED");
+    hintEl.textContent = "";
+    const best = readBest(mode);
+    resultBestEl.textContent = best === null ? "—" : formatTime(best);
+    resultNoteEl.hidden = true;
+    beep(220, 0.12, "sawtooth");
+    window.setTimeout(() => beep(160, 0.16, "sawtooth"), 110);
+  }
+
   refreshBestHud();
-  beep(440, 0.08, "sine");
-  window.setTimeout(() => beep(660, 0.1, "sine"), 90);
-  window.setTimeout(() => beep(880, 0.12, "sine"), 180);
-
   resultEl.hidden = false;
   clearKeys();
 }
 
 function updateGuide() {
-  if (finished) {
+  if (awaitingMode || finished) {
     guide.visible = false;
     return;
   }
@@ -466,7 +598,7 @@ function updateGuide() {
 }
 
 function updateEdgeArrow() {
-  if (finished) {
+  if (awaitingMode || finished) {
     edgeEl.hidden = true;
     return;
   }
@@ -502,7 +634,7 @@ function updateEdgeArrow() {
 }
 
 function updateProximity() {
-  if (finished) {
+  if (awaitingMode || finished) {
     if (!proximityEl.hidden) proximityEl.hidden = true;
     return;
   }
@@ -579,7 +711,8 @@ function pulseMarkers(t: number) {
     }
     if (job.dropLight.visible) {
       job.dropLight.scale.set(1, 1 + Math.sin(t * 2.4 + job.id) * 0.18, 1);
-      shared.beamMat.opacity = 0.42 + Math.sin(t * 3 + job.id) * 0.14;
+      shared.beamMat.opacity = 0.5 + Math.sin(t * 3 + job.id) * 0.14;
+      shared.beamHaloMat.opacity = 0.18 + Math.sin(t * 2.7 + job.id) * 0.08;
       job.dropRing.scale.setScalar(1.2 + Math.sin(t * 2.8 + job.id) * 0.15);
     }
   }
@@ -594,6 +727,8 @@ function spinClouds(dt: number) {
 }
 
 function resetRun(announce: boolean) {
+  if (!currentMode || awaitingMode) return;
+
   delivered = 0;
   carrying = false;
   finished = false;
@@ -612,10 +747,21 @@ function resetRun(announce: boolean) {
   resultEl.hidden = true;
   edgeEl.hidden = true;
   proximityEl.hidden = true;
-  scoreEl.textContent = `0 / ${GOAL_COUNT}`;
-  timerEl.textContent = "0:00";
+  timerEl.classList.remove("is-urgent");
+
+  const goals = goalCount();
+  scoreEl.textContent = `0 / ${goals}`;
+  if (currentMode === "timed") {
+    timerEl.textContent = formatTime(TIME_LIMIT);
+  } else {
+    timerEl.textContent = "0:00";
+  }
+  modeTagEl.textContent = MODE_META[currentMode].tag;
   setObjective("FIND YELLOW PACKAGE");
-  hintEl.textContent = "黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺";
+  hintEl.textContent =
+    currentMode === "timed"
+      ? `限时 ${TIME_LIMIT}s · 黄块拾取 · 橙柱送达 · Shift 冲刺`
+      : "黄块 = 包裹 · 橙柱 = 送达点 · Shift 冲刺";
 
   for (const job of jobs) {
     scene.remove(job.pickupMesh, job.pickupRing, job.dropMesh, job.dropLight, job.dropRing);
@@ -644,11 +790,20 @@ function resetRun(announce: boolean) {
 }
 
 function createJobs(): Job[] {
-  const seeds = [
+  if (!currentMode) return [];
+
+  const classicSeeds = [
     { pick: latLon(18, -35), drop: latLon(-12, 55) },
     { pick: latLon(-28, 140), drop: latLon(32, -120) },
     { pick: latLon(42, 80), drop: latLon(-40, -20) },
   ];
+  const challengeSeeds = [
+    { pick: latLon(8, -70), drop: latLon(-35, 25) },
+    { pick: latLon(-18, 95), drop: latLon(40, -150) },
+    { pick: latLon(55, 20), drop: latLon(-48, 160) },
+    { pick: latLon(-5, -170), drop: latLon(22, 60) },
+  ];
+  const seeds = currentMode === "challenge" ? challengeSeeds : classicSeeds;
 
   return seeds.map((s, id) => {
     const pickupMesh = new THREE.Mesh(shared.pickGeo, shared.pickMat);
@@ -660,11 +815,14 @@ function createJobs(): Job[] {
     const dropMesh = new THREE.Mesh(shared.dropGeo, shared.dropMat);
     const dropRing = new THREE.Mesh(shared.dropRingGeo, shared.dropRingMat);
     const dropLight = new THREE.Mesh(shared.beamGeo, shared.beamMat);
+    const beamHalo = new THREE.Mesh(shared.beamHaloGeo, shared.beamHaloMat);
+    dropLight.add(beamHalo);
     placeOnSphere(dropMesh, s.drop, tangentOf(s.drop));
     placeRing(dropRing, s.drop);
     const n = tmp3.copy(s.drop).normalize();
     dropLight.position.copy(n).multiplyScalar(PLANET_R + 1.4);
     alignObject(dropLight, n, tangentOf(s.drop));
+    dropLight.quaternion.copy(qAlign);
     scene.add(dropMesh, dropRing, dropLight);
 
     return {
@@ -713,12 +871,29 @@ function placeRing(ring: THREE.Mesh, normal: THREE.Vector3) {
 }
 
 function makeGuide() {
-  const g = new THREE.Mesh(
+  const group = new THREE.Group();
+
+  const cone = new THREE.Mesh(
     new THREE.ConeGeometry(0.14, 0.4, 5),
     new THREE.MeshBasicMaterial({ color: "#7dffb3" }),
   );
-  g.rotation.x = Math.PI / 2;
-  return g;
+  cone.rotation.x = Math.PI / 2;
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.18, 0.26, LEAN ? 12 : 20),
+    new THREE.MeshBasicMaterial({
+      color: "#7dffb3",
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  ring.position.z = -0.08;
+  ring.rotation.y = Math.PI / 2;
+
+  group.add(cone, ring);
+  return group;
 }
 
 function buildCourier() {
@@ -747,6 +922,54 @@ function buildCourier() {
   );
   helmet.position.y = 0.72;
   bob.add(helmet);
+
+  const visor = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, LEAN ? 6 : 8, LEAN ? 4 : 6, 0, Math.PI * 2, 0, Math.PI * 0.55),
+    new THREE.MeshStandardMaterial({
+      color: "#1a2430",
+      flatShading: true,
+      roughness: 0.25,
+      metalness: 0.35,
+    }),
+  );
+  visor.position.set(0, 0.72, 0.12);
+  visor.rotation.x = Math.PI * 0.15;
+  bob.add(visor);
+
+  const backpack = new THREE.Mesh(
+    new THREE.BoxGeometry(0.28, 0.32, 0.16),
+    new THREE.MeshStandardMaterial({
+      color: "#c8d2e0",
+      flatShading: true,
+      roughness: 0.6,
+    }),
+  );
+  backpack.position.set(0, 0.4, -0.22);
+  bob.add(backpack);
+
+  const antenna = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.02, 0.02, 0.28, 5),
+    new THREE.MeshStandardMaterial({
+      color: "#dfe7f2",
+      flatShading: true,
+      roughness: 0.5,
+    }),
+  );
+  antenna.position.set(0.08, 0.92, -0.02);
+  bob.add(antenna);
+
+  const antennaTip = new THREE.Mesh(
+    new THREE.SphereGeometry(0.045, 6, 6),
+    new THREE.MeshStandardMaterial({
+      color: "#ffd35a",
+      flatShading: true,
+      emissive: "#ffd35a",
+      emissiveIntensity: 0.55,
+      roughness: 0.35,
+    }),
+  );
+  antennaTip.position.set(0.08, 1.08, -0.02);
+  bob.add(antennaTip);
 
   const parcel = new THREE.Mesh(
     new THREE.BoxGeometry(0.28, 0.22, 0.28),
@@ -867,14 +1090,42 @@ function latLon(latDeg: number, lonDeg: number) {
   ).normalize();
 }
 
+function addStars() {
+  const count = LEAN ? 180 : 420;
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    const v = latLon(-80 + Math.random() * 160, Math.random() * 360);
+    const r = 22 + Math.random() * 28;
+    positions[i3] = v.x * r;
+    positions[i3 + 1] = v.y * r;
+    positions[i3 + 2] = v.z * r;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const stars = new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      color: "#d7e6f5",
+      size: LEAN ? 0.08 : 0.1,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      sizeAttenuation: true,
+    }),
+  );
+  scene.add(stars);
+}
+
 function addLandPatches() {
-  const mat = new THREE.MeshStandardMaterial({
-    color: "#5cb87a",
-    flatShading: true,
-    roughness: 0.9,
-  });
+  const tones = ["#3f9a6e", "#4aad78", "#2f8a5f", "#5cb87a", "#358866"];
   const count = LEAN ? 10 : 16;
   for (let i = 0; i < count; i++) {
+    const mat = new THREE.MeshStandardMaterial({
+      color: tones[i % tones.length],
+      flatShading: true,
+      roughness: 0.9,
+    });
     const patch = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.55 + (i % 5) * 0.12, 0),
       mat,
@@ -925,7 +1176,10 @@ function addLandmarks() {
   placeLandmark(latLon(35, 155), (root) => {
     const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.12, 8), darkMat);
     pad.position.y = 0.06;
-    const dish = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), bodyMat);
+    const dish = new THREE.Mesh(
+      new THREE.SphereGeometry(0.28, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.5),
+      bodyMat,
+    );
     dish.position.y = 0.28;
     dish.rotation.x = Math.PI;
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.55, 6), roofMat);
@@ -940,7 +1194,6 @@ function placeLandmark(normal: THREE.Vector3, build: (root: THREE.Group) => void
   const n = normal.clone().normalize();
   root.position.copy(n).multiplyScalar(PLANET_R + 0.02);
   alignObject(root, n, tangentOf(n));
-  // Snap quaternion fully so buildings don't start mid-slerp.
   root.quaternion.copy(qAlign);
   scene.add(root);
 }
@@ -971,7 +1224,7 @@ function addClouds() {
 }
 
 function onKeyDown(e: KeyboardEvent) {
-  if (!booted) return;
+  if (!booted || awaitingMode) return;
   if (e.code === "KeyR" && !e.repeat) {
     e.preventDefault();
     resetRun(true);
@@ -1036,6 +1289,7 @@ function bindTouch() {
     const key = map[dir];
 
     const on = () => {
+      if (awaitingMode || finished) return;
       keys[key] = true;
       btn.classList.add("is-on");
     };
@@ -1075,19 +1329,27 @@ function formatTime(sec: number) {
   return `${m}:${r.toString().padStart(2, "0")}`;
 }
 
-function readBest(): number | null {
-  const raw = localStorage.getItem(BEST_KEY);
+function bestKey(mode: ModeId) {
+  return `orb-courier-best-${mode}`;
+}
+
+function readBest(mode: ModeId): number | null {
+  const raw = localStorage.getItem(bestKey(mode));
   if (!raw) return null;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function writeBest(sec: number) {
-  localStorage.setItem(BEST_KEY, String(sec));
+function writeBest(mode: ModeId, sec: number) {
+  localStorage.setItem(bestKey(mode), String(sec));
 }
 
 function refreshBestHud() {
-  const best = readBest();
+  if (!currentMode) {
+    bestEl.textContent = "BEST —";
+    return;
+  }
+  const best = readBest(currentMode);
   bestEl.textContent = best === null ? "BEST —" : `BEST ${formatTime(best)}`;
 }
 

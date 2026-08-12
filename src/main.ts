@@ -42,10 +42,7 @@ app.innerHTML = `
     <section id="work" aria-labelledby="work-title">
       <div class="section-head">
         <p class="section-kicker">Selected Work</p>
-        <h2 class="section-title" id="work-title">PROJECTS</h2>
-        <p class="section-desc">
-          Orb Courier、FocusSpace / Luna Dining 3D Web、Rosemary 产品站、AAPL 预测、Tempe EDA、企微考勤、电竞管理。
-        </p>
+        <h2 class="section-title" id="work-title">WORK</h2>
       </div>
       <div class="projects">
         ${projects
@@ -58,7 +55,7 @@ app.innerHTML = `
             <div class="project-id">${p.id}</div>
             <div class="project-body">
               <div class="project-copy">
-                ${p.featured ? `<p class="project-badge">Featured Playable</p>` : ""}
+                ${p.featured ? `<p class="project-badge">Featured</p>` : ""}
                 <h3 class="project-title">
                   <a href="${href}" ${extAttrs}>${p.title}</a>
                 </h3>
@@ -93,12 +90,8 @@ app.innerHTML = `
       </div>
       <div class="about-grid">
         <p>
-          我是 <strong>${profile.brand}</strong>（${profile.handle}），就读于
-          University Putra Malaysia，专业方向为计算机科学（多媒体计算）。
-          作品集侧重「可演示、可部署、可复现」——从 React Three Fiber 3D 站到 Firebase 产品页与 Python 数据流水线。
-        </p>
-        <p class="about-note">
-          仓库持续迭代中。若某个项目 README 仍较薄，以本页摘要 + GitHub 最新提交为准。
+          <strong>${profile.brand}</strong> · ${profile.role}<br />
+          喜欢把互动和工具做成能直接打开的东西。
         </p>
       </div>
     </section>
