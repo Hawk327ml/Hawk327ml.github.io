@@ -128,20 +128,15 @@ const resultModeEl = resultModeNode;
 
 let renderer: THREE.WebGLRenderer;
 try {
-  renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: !LEAN,
-    powerPreference: "high-performance",
-    alpha: false,
-  });
+  renderer = createRenderer(canvas);
 } catch {
-  if (bootCopyEl) bootCopyEl.textContent = "WebGL 不可用 · 换浏览器试试";
   const status = document.querySelector<HTMLElement>("#engine-status");
   if (status) {
     status.hidden = false;
-    status.textContent = "WebGL 不可用 · 换浏览器试试";
+    status.textContent = "WebGL 不可用 · 请换 Chrome/Edge 再开";
   }
-  throw new Error("WebGL unavailable");
+  if (bootCopyEl) bootCopyEl.textContent = "WebGL 不可用 · 请换 Chrome/Edge 再开";
+  throw new Error("WEBGL_UNAVAILABLE");
 }
 renderer.setPixelRatio(pixelBudget());
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1511,6 +1506,23 @@ function pixelBudget() {
   const dpr = window.devicePixelRatio || 1;
   if (LEAN || window.innerWidth < 720) return Math.min(dpr, 1.25);
   return Math.min(dpr, 2);
+}
+
+function createRenderer(target: HTMLCanvasElement) {
+  const attempts: THREE.WebGLRendererParameters[] = [
+    { canvas: target, antialias: !LEAN, powerPreference: "high-performance", alpha: false },
+    { canvas: target, antialias: false, powerPreference: "default", alpha: false },
+    { canvas: target, antialias: false, alpha: false },
+  ];
+  let lastError: unknown;
+  for (const opts of attempts) {
+    try {
+      return new THREE.WebGLRenderer(opts);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("WEBGL_UNAVAILABLE");
 }
 
 function isLeanDevice() {
