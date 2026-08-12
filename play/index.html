@@ -33,9 +33,10 @@
       .boot-bar { width: min(220px, 56vw); height: 3px; margin: 0 auto; overflow: hidden; background: rgba(242, 239, 230, 0.15); }
       .boot-bar span { display: block; width: 40%; height: 100%; background: #ff6b3d; }
       .mode-pick {
-        position: fixed; inset: 0; z-index: 15; display: grid; place-content: center; gap: 1rem;
+        position: fixed; inset: 0; z-index: 30; display: grid; place-content: center; gap: 1rem;
         padding: 1.5rem; color: #f2efe6; font-family: system-ui, sans-serif;
         background: radial-gradient(ellipse 70% 50% at 50% 20%, rgba(255, 107, 61, 0.14), transparent 58%), rgba(10, 18, 28, 0.82);
+        pointer-events: auto;
       }
       .mode-pick[hidden] { display: none !important; }
       .mode-kicker { margin: 0; text-align: center; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(242, 239, 230, 0.72); }
@@ -46,8 +47,9 @@
       .mode-card {
         display: grid; gap: 0.25rem; padding: 1rem 1.15rem; text-align: left; cursor: pointer;
         border: 1px solid rgba(242, 239, 230, 0.18); background: rgba(14, 24, 34, 0.78); color: inherit;
+        pointer-events: auto;
       }
-      .mode-card:disabled { opacity: 0.55; cursor: default; }
+      .mode-card:disabled { opacity: 0.45; cursor: not-allowed; }
       .mode-card.is-recommend { border-color: rgba(255, 107, 61, 0.55); background: rgba(255, 107, 61, 0.1); }
       .mode-name { font-size: 1.45rem; letter-spacing: 0.1em; }
       .mode-meta { font-size: 0.78rem; color: rgba(242, 239, 230, 0.72); }

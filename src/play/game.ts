@@ -1,5 +1,16 @@
 import * as THREE from "three";
 
+type OrbApi = {
+  ready: boolean;
+  selectMode: (mode: "classic" | "challenge" | "timed") => void;
+};
+
+declare global {
+  interface Window {
+    __orb?: OrbApi;
+  }
+}
+
 const PLANET_R = 5;
 const WALK_SPEED = 2.55;
 const SPRINT_SPEED = 4.55;
@@ -321,6 +332,12 @@ function markEngineReady() {
     btn.disabled = false;
     btn.style.cursor = "pointer";
   });
+  window.__orb = {
+    ready: true,
+    selectMode: (mode: ModeId) => {
+      selectMode(mode);
+    },
+  };
 }
 
 function clearBusyCursor() {
@@ -376,6 +393,7 @@ function selectMode(mode: ModeId) {
   currentMode = mode;
   awaitingMode = false;
   clearBusyCursor();
+  canvas?.classList.add("is-playable");
   modePickEl.hidden = true;
   hudEl.hidden = false;
   modeTagEl.textContent = MODE_META[mode].tag;
@@ -388,6 +406,7 @@ function openModePick() {
   finished = true;
   started = false;
   clearKeys();
+  canvas?.classList.remove("is-playable");
   resultEl.hidden = true;
   hudEl.hidden = true;
   modePickEl.hidden = false;
