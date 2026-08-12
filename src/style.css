@@ -71,7 +71,9 @@ img {
   justify-content: space-between;
   align-items: center;
   padding: 1rem var(--pad);
-  background: linear-gradient(to bottom, rgba(11, 15, 12, 0.92), transparent);
+  background: linear-gradient(to bottom, rgba(11, 15, 12, 0.88), rgba(11, 15, 12, 0.35) 70%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .site-nav a {
@@ -261,14 +263,16 @@ section {
   grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   gap: 1rem 1.5rem;
   align-items: start;
-  padding: 1.75rem 0;
+  padding: 1.75rem 0 1.75rem 0.85rem;
   border-bottom: 1px solid var(--line);
+  border-left: 2px solid transparent;
   opacity: 0;
   transform: translateY(24px);
   transition:
     opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.25s ease;
+    background 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .project.is-visible {
@@ -278,6 +282,7 @@ section {
 
 .project:hover {
   background: linear-gradient(90deg, rgba(200, 245, 66, 0.05), transparent 55%);
+  border-left-color: color-mix(in srgb, var(--project-accent, var(--accent)) 75%, transparent);
 }
 
 .project.is-featured {
@@ -286,6 +291,7 @@ section {
     color-mix(in srgb, var(--project-accent, var(--accent)) 12%, transparent),
     transparent 58%
   );
+  border-left-color: var(--project-accent, var(--accent));
 }
 
 .project-badge {
@@ -308,9 +314,30 @@ section {
 .project-media {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: #0a0e0b;
+  border: 1px solid color-mix(in srgb, var(--project-accent, var(--accent)) 28%, var(--line));
+  background:
+    radial-gradient(
+      ellipse 80% 70% at 70% 20%,
+      color-mix(in srgb, var(--project-accent, var(--accent)) 18%, transparent),
+      transparent 60%
+    ),
+    #0a0e0b;
   aspect-ratio: 16 / 10;
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project.is-featured .project-media {
+  aspect-ratio: 16 / 9;
+}
+
+.project:hover .project-media {
+  border-color: color-mix(in srgb, var(--project-accent, var(--accent)) 55%, var(--line));
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--project-accent, var(--accent)) 16%, transparent);
+  transform: translateY(-3px);
 }
 
 .project-media img {
@@ -321,7 +348,7 @@ section {
 }
 
 .project:hover .project-media img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .project-id {

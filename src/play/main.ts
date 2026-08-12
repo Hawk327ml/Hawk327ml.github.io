@@ -2,15 +2,18 @@ import "./style.css";
 import * as THREE from "three";
 
 const PLANET_R = 5;
-const WALK_SPEED = 2.35;
-const SPRINT_SPEED = 4.15;
-const CAM_LERP = 7.2;
+const WALK_SPEED = 2.55;
+const SPRINT_SPEED = 4.55;
+const CAM_LERP = 8.2;
 const FOV_BASE = 48;
-const FOV_SPRINT = 56;
+const FOV_SPRINT = 58;
+const FOV_PUNCH = 4.5;
 const GOAL_COUNT = 3;
 const SURFACE = PLANET_R + 0.18;
-const PICK_RANGE = 1.05;
-const NEAR_RANGE = 2.4;
+const PICK_RANGE = 1.12;
+const NEAR_RANGE = 2.55;
+const ACCEL = 12;
+const DECEL = 14;
 const LEAN = isLeanDevice();
 const BEST_KEY = "orb-courier-best-sec";
 
@@ -208,6 +211,7 @@ let idleHintAt = 8;
 let jobs = createJobs();
 let booted = false;
 let lastFov = FOV_BASE;
+let fovPunch = 0;
 let lastTimerSec = -1;
 let dustCooldown = 0;
 let lastEdgeKey = "";
@@ -299,7 +303,8 @@ function updateMovement(dt: number) {
 
   const wantSprint = keys.sprint && move.lengthSq() > 0;
   const targetSpeed = move.lengthSq() > 0 ? (wantSprint ? SPRINT_SPEED : WALK_SPEED) : 0;
-  speed = THREE.MathUtils.damp(speed, targetSpeed, 9, dt);
+  const rate = targetSpeed > speed ? ACCEL : DECEL;
+  speed = THREE.MathUtils.damp(speed, targetSpeed, rate, dt);
 
   if (move.lengthSq() > 0 && speed > 0.05) {
     move.normalize();
@@ -349,8 +354,9 @@ function updateCamera(dt: number) {
   camera.up.lerp(up, 1 - Math.exp(-CAM_LERP * dt)).normalize();
   camera.lookAt(camLook);
 
-  const fovTarget = THREE.MathUtils.lerp(FOV_BASE, FOV_SPRINT, sprintT);
-  camera.fov = THREE.MathUtils.damp(camera.fov, fovTarget, 8, dt);
+  const fovTarget = THREE.MathUtils.lerp(FOV_BASE, FOV_SPRINT, sprintT) + fovPunch;
+  fovPunch = THREE.MathUtils.damp(fovPunch, 0, 6, dt);
+  camera.fov = THREE.MathUtils.damp(camera.fov, fovTarget, 10, dt);
   if (Math.abs(camera.fov - lastFov) > 0.05) {
     lastFov = camera.fov;
     camera.updateProjectionMatrix();
@@ -372,6 +378,7 @@ function updateJobs() {
         job.pickupRing.visible = false;
         courier.parcel.visible = true;
         burstDust(1.2);
+        fovPunch = FOV_PUNCH;
         beep(520, 0.06, "triangle");
         showToast("PICKED UP");
         setObjective("DELIVER TO ORANGE BEAM");
@@ -387,6 +394,7 @@ function updateJobs() {
         courier.parcel.visible = false;
         hideJob(job);
         burstDust(1.8);
+        fovPunch = FOV_PUNCH * 1.35;
         beep(680, 0.07, "square");
         scoreEl.textContent = `${delivered} / ${GOAL_COUNT}`;
 
@@ -595,6 +603,7 @@ function resetRun(announce: boolean) {
   idleHintAt = 8;
   speed = 0;
   camVel.set(0, 0, 0);
+  fovPunch = 0;
   facing.set(0, 0, 1);
   lastEdgeKey = "";
   courier.parcel.visible = false;
