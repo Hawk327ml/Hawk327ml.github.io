@@ -60,17 +60,12 @@ async function loadEngine(attempt = 1): Promise<void> {
   } catch (err) {
     console.error(`orb engine load attempt ${attempt}`, err);
     if (attempt < 3) {
-      await new Promise((r) => setTimeout(r, 700 * attempt));
+      await new Promise((r) => setTimeout(r, 900 * attempt));
       return loadEngine(attempt + 1);
     }
     showFail(err);
   }
 }
-
-// Let Vite preload misses fall through to import() retries instead of hard-crashing.
-window.addEventListener("vite:preloadError", (event) => {
-  event.preventDefault();
-});
 
 revealShell();
 void loadEngine();

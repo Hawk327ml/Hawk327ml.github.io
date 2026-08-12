@@ -8,17 +8,9 @@ export default defineConfig({
   base: "/",
   build: {
     chunkSizeWarningLimit: 700,
-    // Avoid hard-failing when a separate three preload times out on flaky networks.
-    modulePreload: {
-      polyfill: true,
-      resolveDependencies(filename, deps) {
-        // Keep CSS/polyfill preloads; don't force-preload the heavy engine graph.
-        if (filename.includes("play")) {
-          return deps.filter((d) => d.endsWith(".css") || d.includes("modulepreload-polyfill"));
-        }
-        return deps;
-      },
-    },
+    // Disable Vite's modulepreload helper: on flaky networks it hard-fails the
+    // whole play entry when the ~0.5MB three chunk preload times out.
+    modulePreload: false,
     rollupOptions: {
       input: {
         main: resolve(root, "index.html"),
