@@ -32,6 +32,25 @@
       .boot-copy { margin: 0; text-align: center; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(242, 239, 230, 0.72); }
       .boot-bar { width: min(220px, 56vw); height: 3px; margin: 0 auto; overflow: hidden; background: rgba(242, 239, 230, 0.15); }
       .boot-bar span { display: block; width: 40%; height: 100%; background: #ff6b3d; }
+      .mode-pick {
+        position: fixed; inset: 0; z-index: 15; display: grid; place-content: center; gap: 1rem;
+        padding: 1.5rem; color: #f2efe6; font-family: system-ui, sans-serif;
+        background: radial-gradient(ellipse 70% 50% at 50% 20%, rgba(255, 107, 61, 0.14), transparent 58%), rgba(10, 18, 28, 0.82);
+      }
+      .mode-pick[hidden] { display: none !important; }
+      .mode-kicker { margin: 0; text-align: center; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(242, 239, 230, 0.72); }
+      .mode-title { margin: 0; text-align: center; font-size: clamp(2.4rem, 9vw, 3.6rem); letter-spacing: 0.12em; line-height: 0.95; }
+      .mode-how, .mode-status { margin: 0; text-align: center; font-size: 0.84rem; color: rgba(242, 239, 230, 0.72); }
+      .mode-status { color: #ffb078; }
+      .mode-grid { display: grid; gap: 0.7rem; width: min(420px, 100%); }
+      .mode-card {
+        display: grid; gap: 0.25rem; padding: 1rem 1.15rem; text-align: left; cursor: pointer;
+        border: 1px solid rgba(242, 239, 230, 0.18); background: rgba(14, 24, 34, 0.78); color: inherit;
+      }
+      .mode-card:disabled { opacity: 0.55; cursor: wait; }
+      .mode-card.is-recommend { border-color: rgba(255, 107, 61, 0.55); background: rgba(255, 107, 61, 0.1); }
+      .mode-name { font-size: 1.45rem; letter-spacing: 0.1em; }
+      .mode-meta { font-size: 0.78rem; color: rgba(242, 239, 230, 0.72); }
     </style>
   </head>
   <body>
@@ -45,16 +64,17 @@
       <p class="mode-kicker">Choose Route</p>
       <h1 class="mode-title">ORB COURIER</h1>
       <p class="mode-how">黄块拾取 → 橙柱送达 · 跟着绿箭头</p>
+      <p class="mode-status" id="engine-status">引擎加载中…</p>
       <div class="mode-grid">
-        <button type="button" class="mode-card is-recommend" data-mode="classic">
+        <button type="button" class="mode-card is-recommend" data-mode="classic" disabled>
           <span class="mode-name">Classic</span>
           <span class="mode-meta">3 parcels · 推荐首玩</span>
         </button>
-        <button type="button" class="mode-card" data-mode="challenge">
+        <button type="button" class="mode-card" data-mode="challenge" disabled>
           <span class="mode-name">Challenge</span>
           <span class="mode-meta">4 parcels · long route</span>
         </button>
-        <button type="button" class="mode-card" data-mode="timed">
+        <button type="button" class="mode-card" data-mode="timed" disabled>
           <span class="mode-name">Timed</span>
           <span class="mode-meta">3 parcels · 105s limit</span>
         </button>
@@ -123,21 +143,27 @@
 
     <canvas id="c"></canvas>
     <script>
-      // If the module/chunk never boots (slow network / China CDN), surface a recovery path.
-      window.setTimeout(function () {
+      // Reveal route picker before any JS chunk downloads (three is ~0.5MB).
+      (function () {
         var boot = document.getElementById("boot");
-        var copy = document.getElementById("boot-copy");
-        if (!boot || boot.classList.contains("is-done") || !copy) return;
-        copy.textContent = "加载超时 · 点击此处重试";
-        boot.style.cursor = "pointer";
-        boot.addEventListener(
-          "click",
-          function () {
+        var pick = document.getElementById("mode-pick");
+        var status = document.getElementById("engine-status");
+        if (boot) boot.classList.add("is-done");
+        if (pick) pick.hidden = false;
+        if (status) status.textContent = "引擎加载中…（约 0.5MB）";
+        window.setTimeout(function () {
+          if (boot && boot.isConnected) boot.remove();
+        }, 420);
+        window.setTimeout(function () {
+          if (!status || status.hidden) return;
+          if (status.textContent.indexOf("失败") !== -1) return;
+          status.textContent = "仍在加载引擎 · 点此刷新重试";
+          status.style.cursor = "pointer";
+          status.onclick = function () {
             location.reload();
-          },
-          { once: true },
-        );
-      }, 12000);
+          };
+        }, 15000);
+      })();
     </script>
     <script type="module" src="/src/play/main.ts"></script>
   </body>
