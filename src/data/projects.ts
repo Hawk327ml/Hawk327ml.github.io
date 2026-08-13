@@ -56,12 +56,13 @@ export const projects: Project[] = [
   {
     id: "02",
     title: "Luna Dining",
-    tagline: "3D 选桌 + 预订表单，localStorage 演示（Firebase Live）。",
+    tagline: "点桌选位 → 填表预订：3D 厅堂 + localStorage 演示。",
     stack: ["React", "R3F", "Three.js"],
     repo: "https://github.com/Hawk327ml/luna-dining-3d",
     live: "https://luna-dining-3d.web.app",
     accent: "#1F6B58",
     image: "/thumbs/luna.png",
+    video: "/thumbs/luna.webm",
     tier: "selected",
   },
   {
