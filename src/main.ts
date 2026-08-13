@@ -65,6 +65,8 @@ app.innerHTML = `
       &nbsp;&nbsp;
       <a href="/play/">Play</a>
       &nbsp;&nbsp;
+      <a href="/assist/">Assist</a>
+      &nbsp;&nbsp;
       <a href="/pulse/">Pulse</a>
       &nbsp;&nbsp;
       <a href="#about">About</a>
@@ -86,7 +88,7 @@ app.innerHTML = `
       </div>
       <div class="cta-row">
         <a class="btn btn-primary" href="/play/">试玩 Orb Courier</a>
-        <a class="btn btn-ghost" href="/pulse/">PULSEFIELD</a>
+        <a class="btn btn-ghost" href="/assist/">Vision Assist</a>
         <a class="btn btn-ghost" href="#work">查看作品</a>
       </div>
     </section>
@@ -95,7 +97,7 @@ app.innerHTML = `
       <div class="section-head">
         <p class="section-kicker">Selected Work</p>
         <h2 class="section-title" id="work-title">WORK</h2>
-        <p class="section-desc">优先看可玩的互动与已上线产品；课设与工具放在下方。</p>
+        <p class="section-desc">先看可玩 demo 与已上线产品；课设与桌面工具在下方 Other。</p>
       </div>
       <div class="projects">
         ${selected.map(renderProject).join("")}
@@ -161,16 +163,46 @@ const coverVideos = [
   ...app.querySelectorAll<HTMLVideoElement>(".project-media video"),
 ];
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+const playCover = (video: HTMLVideoElement) => {
+  video.setAttribute("autoplay", "");
+  void video.play().catch(() => {});
+};
+
+const pauseCover = (video: HTMLVideoElement) => {
+  video.pause();
+};
+
 const syncCoverMotion = () => {
   for (const video of coverVideos) {
     if (motionQuery.matches) {
-      video.pause();
+      pauseCover(video);
       video.removeAttribute("autoplay");
+    } else if (video.dataset.inView === "1") {
+      playCover(video);
     } else {
-      video.setAttribute("autoplay", "");
-      void video.play().catch(() => {});
+      pauseCover(video);
     }
   }
 };
+
+const coverObserver = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      const video = entry.target as HTMLVideoElement;
+      video.dataset.inView = entry.isIntersecting ? "1" : "0";
+      if (motionQuery.matches) continue;
+      if (entry.isIntersecting) playCover(video);
+      else pauseCover(video);
+    }
+  },
+  { threshold: 0.35 },
+);
+
+coverVideos.forEach((video) => {
+  video.dataset.inView = "0";
+  coverObserver.observe(video);
+});
+
 syncCoverMotion();
 motionQuery.addEventListener("change", syncCoverMotion);

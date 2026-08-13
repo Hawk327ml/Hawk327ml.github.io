@@ -16,7 +16,7 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    id: "00",
+    id: "01",
     title: "Orb Courier",
     tagline: "点开即玩的小星球送货：黄块拾取 → 橙柱送达，绿箭头指路，记最佳用时。",
     stack: ["Three.js", "Vite", "TypeScript"],
@@ -29,7 +29,7 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "00b",
+    id: "02",
     title: "Vision Assist Lab",
     tagline: "点开即玩的射击小关卡：端侧检测框 + Assist 可关 · 非商业作弊工具。",
     stack: ["Canvas", "Web Worker", "TypeScript"],
@@ -42,7 +42,20 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "01",
+    id: "03",
+    title: "PULSEFIELD",
+    tagline: "点 Play，环形舞台跟拍频谱：A/B 轨切换，几何跟着呼吸。",
+    stack: ["Web Audio", "Three.js", "Vite"],
+    repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
+    live: "/pulse/",
+    accent: "#3EE0B8",
+    image: "/thumbs/pulsefield.svg",
+    video: "/thumbs/pulsefield.webm",
+    featured: true,
+    tier: "selected",
+  },
+  {
+    id: "04",
     title: "FocusSpace",
     tagline: "点开即用的 3D 书房：点物件切模式 · 灯控日夜 · 时钟开番茄钟。",
     stack: ["React", "R3F", "Three.js"],
@@ -55,7 +68,7 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "02",
+    id: "05",
     title: "Luna Dining",
     tagline: "点桌选位 → 填表预订：3D 厅堂 + localStorage 演示。",
     stack: ["React", "R3F", "Three.js"],
@@ -67,7 +80,7 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "03",
+    id: "06",
     title: "Rosemary",
     tagline: "点开即用的阳台迷迭香护理站：checklist · 浇水判断 · 可登录保存。",
     stack: ["HTML/CSS/JS", "Firebase"],
@@ -80,7 +93,7 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "04",
+    id: "07",
     title: "AAPL Forecast",
     tagline: "点开即看次日 Adj Close：Ridge · MAE 2.12 / R² 0.987（Notebook 口径，非交易建议）。",
     stack: ["Python", "scikit-learn", "Jupyter"],
@@ -92,7 +105,7 @@ export const projects: Project[] = [
     tier: "selected",
   },
   {
-    id: "05",
+    id: "08",
     title: "Focus Portal",
     tagline: "CSM3401：Firebase 登录闸门 → Focus Command 任务台，完整 Auth 跳转流。",
     stack: ["Firebase Auth", "React", "Vite"],
@@ -103,7 +116,7 @@ export const projects: Project[] = [
     tier: "other",
   },
   {
-    id: "06",
+    id: "09",
     title: "Tempe Crash EDA",
     tagline: "Tempe 公开事故数据：5.6 万行清洗 + 时段/严重度洞察（非因果）。",
     stack: ["Python", "pandas", "Jupyter"],
@@ -113,7 +126,7 @@ export const projects: Project[] = [
     tier: "other",
   },
   {
-    id: "07",
+    id: "10",
     title: "Attendance Tools",
     tagline: "企微考勤月报一键汇总：少抄表、少对账的桌面小工具。",
     stack: ["Python", "Excel"],
@@ -123,7 +136,7 @@ export const projects: Project[] = [
     tier: "other",
   },
   {
-    id: "08",
+    id: "11",
     title: "Esports Desk",
     tagline: "JavaFX 队务桌面端：队员 / 合同 / 赛果三表 CRUD，Maven 一键跑。",
     stack: ["Java", "JavaFX", "MySQL"],
@@ -131,19 +144,6 @@ export const projects: Project[] = [
     accent: "#F45B69",
     image: "/thumbs/esports.png",
     tier: "other",
-  },
-  {
-    id: "09",
-    title: "PULSEFIELD",
-    tagline: "点 Play，环形舞台跟拍频谱：A/B 轨切换，几何跟着呼吸。",
-    stack: ["Web Audio", "Three.js", "Vite"],
-    repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
-    live: "/pulse/",
-    accent: "#3EE0B8",
-    image: "/thumbs/pulsefield.svg",
-    video: "/thumbs/pulsefield.webm",
-    featured: true,
-    tier: "selected",
   },
 ];
 
@@ -155,6 +155,6 @@ export const profile = {
   github: "https://github.com/Hawk327ml",
   email: "13136378760@163.com",
   blurb: "做能点开就玩的互动网页，和真正省事的小工具。",
-  seeking: "开放实习 / 协作：互动网页、3D Web、数据可视化与小工具。",
+  seeking: "开放实习 / 协作：互动网页、3D Web、端侧视觉 demo、数据可视化与小工具。",
   contactNote: "邮件或 GitHub 均可联系。",
 };
