@@ -18,7 +18,7 @@ export const projects: Project[] = [
   {
     id: "00",
     title: "Orb Courier",
-    tagline: "30 秒可玩的小星球送货：曲面移动、目标指引、最佳用时。Vanilla Three.js。",
+    tagline: "点开即玩的小星球送货：黄块拾取 → 橙柱送达，绿箭头指路，记最佳用时。",
     stack: ["Three.js", "Vite", "TypeScript"],
     repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
     live: "/play/",
