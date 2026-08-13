@@ -30,6 +30,7 @@
   <body>
     <div class="boot" id="boot" aria-live="polite">
       <p class="boot-brand">VISION ASSIST</p>
+      <p class="boot-line">点开即玩：射击小关卡 · 端侧检测框 · Assist 可关</p>
       <p class="boot-copy" id="boot-copy">加载检测引擎…</p>
       <div class="boot-bar" aria-hidden="true"><span></span></div>
     </div>
@@ -59,7 +60,7 @@
       <canvas id="game" width="960" height="540" aria-label="Vision assist demo arena"></canvas>
       <canvas id="overlay" width="960" height="540" aria-hidden="true"></canvas>
       <div class="coach-card" id="coach-card">
-        点击画面开火 · 青框来自端侧视觉检测 · 可开关 Assist
+        Tip: 点画面开火 · 看青框锁定目标 · 右上角可开关 Assist
       </div>
     </div>
 
@@ -71,7 +72,7 @@
     </div>
 
     <div class="result" id="result" hidden>
-      <h2>Round clear</h2>
+      <h2>本局结束</h2>
       <p id="result-copy"></p>
       <div class="result-actions">
         <button type="button" id="btn-again">再来一局</button>

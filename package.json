@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "capture:orb-cover": "node scripts/capture-orb-cover.mjs",
-    "capture:pulse-cover": "node scripts/capture-pulse-cover.mjs"
+    "capture:pulse-cover": "node scripts/capture-pulse-cover.mjs",
+    "capture:assist-cover": "node scripts/capture-assist-cover.mjs"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
