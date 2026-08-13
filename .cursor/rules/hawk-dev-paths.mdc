@@ -1,0 +1,30 @@
+---
+description: Hawk 开发路径已迁到 D 盘；禁止再用 Desktop 空壳种子目录
+alwaysApply: true
+---
+
+# Hawk Dev Paths（2026-08-13 迁移）
+
+## Canonical roots
+
+- Dev seeds / Firebase 多站工作副本：`D:\Hawk\Dev\_hawk_repo_seeds`
+- 作品集优先：`D:\Hawk\Dev\_hawk_repo_seeds\Hawk327ml.github.io`（若 Desktop 仍有副本，以 D 盘为准并先 `git pull`）
+- 总览：`D:\Hawk\README.txt`
+
+## Firebase targets（不变）
+
+- 项目 `daisy-c2db8`
+- Rosemary：`D:\Hawk\Dev\_hawk_repo_seeds\Build-rosemary-profile-site` → `hosting:rosemary`
+- FocusSpace：`...\focusspace-3d` → `hosting:focusspace`
+- Luna：`...\luna-dining-3d` → `hosting:luna`
+- 只允许：`firebase deploy --only hosting:<target>`；禁止裸 `firebase deploy`
+
+## Do not use
+
+- `C:\Users\13136\Desktop\_hawk_repo_seeds`（迁移后空壳，应删除）
+- 不要从旧 Codex / Desktop 空路径直接 deploy
+
+## Agent habit
+
+- 后续本机改码、录封面、deploy：默认打开 D 盘上述路径
+- 若工作区仍指向 Desktop 空壳：先 `move_agent_to_root` 到 D 盘真实仓库再动手

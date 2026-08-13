@@ -82,12 +82,13 @@ export const projects: Project[] = [
   {
     id: "04",
     title: "AAPL Forecast",
-    tagline: "次日 Adj Close：Ridge · Test MAE 2.12 / R² 0.987（Notebook 口径，非交易建议）。",
+    tagline: "点开即看次日 Adj Close：Ridge · MAE 2.12 / R² 0.987（Notebook 口径，非交易建议）。",
     stack: ["Python", "scikit-learn", "Jupyter"],
     repo: "https://github.com/Hawk327ml/AAPL-Stock-Prediction",
     live: "https://aapl-stock-prediction-3scusseltfmnzjcthk2lp8.streamlit.app/",
     accent: "#5CE1E6",
     image: "/thumbs/aapl.png",
+    video: "/thumbs/aapl.webm",
     tier: "selected",
   },
   {
