@@ -107,12 +107,13 @@ export const projects: Project[] = [
   {
     id: "08",
     title: "Focus Portal",
-    tagline: "CSM3401：Firebase 登录闸门 → Focus Command 任务台，完整 Auth 跳转流。",
+    tagline: "点开即用的登录闸门：Firebase Auth → Focus Command 任务台。",
     stack: ["Firebase Auth", "React", "Vite"],
     repo: "https://github.com/Hawk327ml/csm3401-focus-portal",
     live: "https://daisy-c2db8-login-task-dlbedwxz.web.app",
     accent: "#7EE0C8",
     image: "/thumbs/focus-portal.svg",
+    video: "/thumbs/focus-portal.webm",
     tier: "other",
   },
   {
