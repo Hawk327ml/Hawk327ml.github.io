@@ -102,6 +102,7 @@ function syncPlayUi() {
   const playing = audio.playing;
   track.textContent = audio.trackId;
   centerEl.classList.toggle("is-playing", playing);
+  document.body.classList.toggle("is-playing", playing);
   statusEl.hidden = !playing;
   if (playing) {
     statusText.textContent = `跟随中 · ${trackLabel()}`;

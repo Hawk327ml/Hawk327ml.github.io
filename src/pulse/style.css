@@ -4,8 +4,8 @@
   --accent: #3ee0b8;
   --accent-2: #f0a35e;
   --bg: #0b1214;
-  --font-display: "Bebas Neue", sans-serif;
-  --font-body: "Manrope", system-ui, sans-serif;
+  --font-display: "Arial Black", "Helvetica Neue", Impact, sans-serif;
+  --font-body: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --safe-b: env(safe-area-inset-bottom, 0px);
 }
 
@@ -33,6 +33,11 @@ body {
   width: 100%;
   height: 100%;
   touch-action: none;
+}
+
+body.is-playing .boot-brand {
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
 .hud {
@@ -72,12 +77,14 @@ body {
   color: var(--ink);
 }
 
-.brand {
+.brand-mini {
   margin: 0;
   justify-self: center;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  letter-spacing: 0.16em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .top-right {
@@ -104,10 +111,10 @@ body {
 }
 
 .center {
-  align-self: end;
+  align-self: center;
   justify-self: center;
   text-align: center;
-  margin-bottom: 10vh;
+  max-width: min(28rem, 92vw);
   transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
@@ -117,8 +124,25 @@ body {
   pointer-events: none;
 }
 
+.kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero-brand {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 11vw, 5.2rem);
+  letter-spacing: 0.12em;
+  line-height: 0.92;
+}
+
 .copy {
-  margin: 0 0 1rem;
+  margin: 0.85rem 0 1.25rem;
   color: var(--muted);
   font-size: clamp(0.95rem, 2.4vw, 1.1rem);
   letter-spacing: 0.02em;
@@ -135,6 +159,17 @@ body {
   font-size: 1.55rem;
   letter-spacing: 0.14em;
   cursor: pointer;
+  animation: play-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes play-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(62, 224, 184, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(62, 224, 184, 0);
+  }
 }
 
 .play:hover {
@@ -210,7 +245,8 @@ body {
 
 @media (max-width: 720px) {
   .center {
-    margin-bottom: 16vh;
+    align-self: end;
+    margin-bottom: 12vh;
   }
 
   .meters {
@@ -221,5 +257,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .center {
     transition: none;
+  }
+
+  .play {
+    animation: none;
   }
 }

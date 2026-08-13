@@ -65,6 +65,8 @@ app.innerHTML = `
       &nbsp;&nbsp;
       <a href="/play/">Play</a>
       &nbsp;&nbsp;
+      <a href="/pulse/">Pulse</a>
+      &nbsp;&nbsp;
       <a href="#about">About</a>
       &nbsp;&nbsp;
       <a href="${profile.github}" target="_blank" rel="noreferrer">GitHub</a>
@@ -84,6 +86,7 @@ app.innerHTML = `
       </div>
       <div class="cta-row">
         <a class="btn btn-primary" href="/play/">试玩 Orb Courier</a>
+        <a class="btn btn-ghost" href="/pulse/">PULSEFIELD</a>
         <a class="btn btn-ghost" href="#work">查看作品</a>
       </div>
     </section>
