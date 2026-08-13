@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0f0c" />
+    <meta
+      name="description"
+      content="Vision Assist Lab — 自制小关卡 + 浏览器端视觉检测 HUD。仅分析自有 Canvas，非商业游戏辅助。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Vision Assist Lab · HAWK" />
+    <meta
+      property="og:description"
+      content="端侧检测框 + 可选辅助高亮 · 40 秒射击小关卡 · 点开即玩。"
+    />
+    <meta property="og:url" content="https://hawk327ml.github.io/assist/" />
+    <meta property="og:image" content="https://hawk327ml.github.io/thumbs/vision-assist.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://hawk327ml.github.io/assist/" />
+    <title>Vision Assist Lab · HAWK</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="boot" id="boot" aria-live="polite">
+      <p class="boot-brand">VISION ASSIST</p>
+      <p class="boot-copy" id="boot-copy">加载检测引擎…</p>
+      <div class="boot-bar" aria-hidden="true"><span></span></div>
+    </div>
+
+    <header class="top">
+      <a class="back" href="/">← HAWK</a>
+      <span class="title">Vision Assist Lab</span>
+      <button class="assist-btn" id="assist-toggle" type="button" aria-pressed="false">
+        Assist Off
+      </button>
+    </header>
+
+    <p class="disclaimer">
+      仅分析本页自有 Canvas。可选 Assist 只影响本 demo（软吸附最近检测框）。
+      <strong>不是</strong>商业游戏瞄准 / 截屏作弊工具。
+      <a href="./DESIGN.md">DESIGN</a> · <a href="./GATE.md">GATE</a>
+    </p>
+
+    <div class="hud-bar" id="hud-bar">
+      <span id="hud-time">40.0s</span>
+      <span id="hud-score">Score 0</span>
+      <span id="hud-best">Best 0</span>
+      <span id="hud-coach">移动准星，点击射击</span>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="game" width="960" height="540" aria-label="Vision assist demo arena"></canvas>
+      <canvas id="overlay" width="960" height="540" aria-hidden="true"></canvas>
+      <div class="coach-card" id="coach-card">
+        点击画面开火 · 青框来自端侧视觉检测 · 可开关 Assist
+      </div>
+    </div>
+
+    <div class="debug" id="debug" hidden>
+      <span>backend: game-matched blob CV</span>
+      <span id="dbg-fps">det —</span>
+      <span id="dbg-infer">infer —</span>
+      <span id="dbg-boxes">boxes 0</span>
+    </div>
+
+    <div class="result" id="result" hidden>
+      <h2>Round clear</h2>
+      <p id="result-copy"></p>
+      <div class="result-actions">
+        <button type="button" id="btn-again">再来一局</button>
+        <button type="button" id="btn-share">分享成绩</button>
+        <a class="btn-link" href="/">回作品集</a>
+      </div>
+      <p class="share-status" id="share-status" hidden></p>
+    </div>
+
+    <script type="module" src="/src/assist/main.ts"></script>
+  </body>
+</html>
