@@ -1,0 +1,22 @@
+---
+description: When deploying Firebase apps for Hawk — use v2rayN Node proxy env
+alwaysApply: true
+---
+
+# Firebase Deploy Proxy (Hawk)
+
+When deploying FocusSpace / Luna / Rosemary under `daisy-c2db8`:
+
+1. Use local seeds under `Desktop\_hawk_repo_seeds\...`, never bare `firebase deploy`.
+2. Only `firebase deploy --only hosting:<target>` (`focusspace` / `luna` / `rosemary`).
+3. Before any `firebase` / Node network call, set (v2rayN must be running):
+
+```powershell
+$env:HTTP_PROXY='http://127.0.0.1:10808'
+$env:HTTPS_PROXY='http://127.0.0.1:10808'
+$env:NODE_USE_ENV_PROXY='1'
+```
+
+Root cause locked 2026-08: Firebase CLI ignores WinINET system proxy; direct TLS to `auth.firebase.tools` resets. Do not `firebase logout` while debugging auth unless asked.
+
+After deploy, spot-check FocusSpace + Rosemary + Luna Live URLs.
