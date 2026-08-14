@@ -16,5 +16,5 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"],
-  "exclude": ["src/assist"]
+  "exclude": []
 }

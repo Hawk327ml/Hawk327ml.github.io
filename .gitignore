@@ -6,6 +6,9 @@ npm-debug.log*
 # Dependencies
 node_modules
 
+# ONNX Runtime WASM (copied from node_modules by Vite; ~12MB)
+public/ort/
+
 # Build
 dist
 dist-ssr

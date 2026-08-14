@@ -8,11 +8,13 @@ export type Box = {
   id?: number;
 };
 
+export type DetectBackend = "onnx" | "blob";
+
 export type MainToWorker =
   | { type: "init" }
   | { type: "frame"; bitmap: ImageBitmap; t: number; maxSide: number };
 
 export type WorkerToMain =
-  | { type: "ready" }
-  | { type: "det"; t: number; inferMs: number; boxes: Box[] }
+  | { type: "ready"; backend: DetectBackend }
+  | { type: "det"; t: number; inferMs: number; boxes: Box[]; backend: DetectBackend }
   | { type: "error"; message: string };

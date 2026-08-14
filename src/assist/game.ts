@@ -33,9 +33,11 @@ export function createGame(
   overlay: HTMLCanvasElement,
   hooks: GameHooks,
 ) {
-  const gctx = canvas.getContext("2d");
-  const octx = overlay.getContext("2d");
-  if (!gctx || !octx) throw new Error("2D context unavailable");
+  const gctxRaw = canvas.getContext("2d");
+  const octxRaw = overlay.getContext("2d");
+  if (!gctxRaw || !octxRaw) throw new Error("2D context unavailable");
+  const gctx = gctxRaw;
+  const octx = octxRaw;
 
   const pointer = { x: 0.5, y: 0.5, down: false };
   let drones: Drone[] = [];

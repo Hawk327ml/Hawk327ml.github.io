@@ -49,15 +49,13 @@ Main
 
 Main thread never blocks on inference; drop frames if worker is busy (`inFlight` gate).
 
-## Probe detector (Phase 0)
+## Vision backend (shipped)
 
-To validate architecture **without** shipping a multi‑MB model on day one:
+- Primary: **ONNX nano** (`public/assist/models/drone-nano.onnx`, ~85KB) via `onnxruntime-web` in Worker
+- Fallback: color-blob CV if ORT/WASM/model fails
+- Same `type: "det"` protocol + IoU tracker + HUD
 
-- Synthetic orange/cyan blobs on canvas (known HSV ranges)
-- Worker runs **color-blob detection** on ImageData (connected components / centroid boxes)
-- Same message protocol as future ONNX/TF.js backend (`type: "det"`)
-
-Swap path (post-GATE): replace `detectColorBlobs` with ONNX Runtime Web / TF.js nano model; keep tracker + HUD.
+Retrain: `npm run train:assist-detector`
 
 ## Performance budget
 

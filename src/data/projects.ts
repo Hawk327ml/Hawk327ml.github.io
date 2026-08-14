@@ -32,7 +32,7 @@ export const projects: Project[] = [
     id: "00b",
     title: "Vision Assist Lab",
     tagline: "点开即玩的射击小关卡：端侧检测框 + Assist 可关 · 非商业作弊工具。",
-    stack: ["Canvas", "Web Worker", "TypeScript"],
+    stack: ["Canvas", "ONNX Runtime", "Web Worker"],
     repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
     live: "/assist/",
     accent: "#5CE1E6",

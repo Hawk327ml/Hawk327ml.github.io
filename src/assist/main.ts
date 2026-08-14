@@ -8,6 +8,7 @@ const bootCopyEl = document.querySelector<HTMLParagraphElement>("#boot-copy");
 const gameCanvas = document.querySelector<HTMLCanvasElement>("#game");
 const overlayCanvas = document.querySelector<HTMLCanvasElement>("#overlay");
 const debugEl = document.querySelector<HTMLDivElement>("#debug");
+const dbgBackend = document.querySelector<HTMLSpanElement>("#dbg-backend");
 const dbgFps = document.querySelector<HTMLSpanElement>("#dbg-fps");
 const dbgInfer = document.querySelector<HTMLSpanElement>("#dbg-infer");
 const dbgBoxes = document.querySelector<HTMLSpanElement>("#dbg-boxes");
@@ -41,6 +42,7 @@ if (!gameCanvas || !overlayCanvas) {
 let assistOn = false;
 let tracked: Box[] = [];
 let inFlight = false;
+let workerReady = false;
 let lastDetAt = 0;
 let detFps = 0;
 let frameGate = 0;
@@ -50,6 +52,8 @@ const tracker = createTracker();
 const worker = new Worker(new URL("./detect/worker.ts", import.meta.url), {
   type: "module",
 });
+
+if (bootCopyEl) bootCopyEl.textContent = "加载 ONNX 检测模型…";
 
 function hideBoot() {
   bootEl?.classList.add("is-done");
@@ -97,6 +101,14 @@ function syncHud() {
 worker.onmessage = (event: MessageEvent<WorkerToMain>) => {
   const msg = event.data;
   if (msg.type === "ready") {
+    workerReady = true;
+    if (dbgBackend) {
+      dbgBackend.textContent =
+        msg.backend === "onnx" ? "backend: ONNX nano" : "backend: blob fallback";
+    }
+    if (bootCopyEl && msg.backend === "blob") {
+      bootCopyEl.textContent = "ONNX 不可用 · 已回退 blob CV";
+    }
     hideBoot();
     game.start();
     window.setTimeout(() => coachCard?.classList.add("is-hidden"), reducedMotion ? 900 : 3800);
@@ -116,6 +128,10 @@ worker.onmessage = (event: MessageEvent<WorkerToMain>) => {
       detFps = dt > 0 ? 1000 / dt : 0;
     }
     lastDetAt = now;
+    if (dbgBackend) {
+      dbgBackend.textContent =
+        msg.backend === "onnx" ? "backend: ONNX nano" : "backend: blob fallback";
+    }
     if (dbgFps) dbgFps.textContent = `det ${detFps.toFixed(1)} fps`;
     if (dbgInfer) dbgInfer.textContent = `infer ${msg.inferMs.toFixed(1)} ms`;
     if (dbgBoxes) dbgBoxes.textContent = `boxes ${tracked.length}`;
@@ -129,6 +145,7 @@ worker.onerror = (err) => {
 worker.postMessage({ type: "init" });
 
 function feedDetector() {
+  if (!workerReady) return;
   frameGate = (frameGate + 1) % frameStride;
   if (frameGate !== 0 || inFlight) return;
   inFlight = true;
@@ -182,11 +199,12 @@ btnShare?.addEventListener("click", async () => {
 });
 
 window.setTimeout(() => {
-  if (bootEl?.isConnected) {
+  if (bootEl?.isConnected && !workerReady) {
+    if (bootCopyEl) bootCopyEl.textContent = "模型仍在加载…可先开玩";
     hideBoot();
     game.start();
   }
-}, 5000);
+}, 12000);
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) inFlight = false;

@@ -32,6 +32,6 @@
 
 | 项 | 记录 |
 |----|------|
-| 视觉后端 | Worker color-blob（匹配 demo 艺术；协议可换 ONNX） |
-| 体积量级 | assist 主包与 worker 仍为数 KB 级（无大模型权重） |
-| debug | `/assist/?debug=1` |
+| 视觉后端 | ONNX nano（`drone-nano.onnx`）+ blob fallback |
+| 模型体积 | ~85KB ONNX；ORT WASM 构建时注入 `/ort/`（不进 git） |
+| debug | `/assist/?debug=1` → `backend: ONNX nano` |
