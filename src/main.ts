@@ -69,6 +69,8 @@ app.innerHTML = `
       &nbsp;&nbsp;
       <a href="/pulse/">Pulse</a>
       &nbsp;&nbsp;
+      <a href="/lab/">Lab</a>
+      &nbsp;&nbsp;
       <a href="#about">About</a>
       &nbsp;&nbsp;
       <a href="${profile.github}" target="_blank" rel="noreferrer">GitHub</a>

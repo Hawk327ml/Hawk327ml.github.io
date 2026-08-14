@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Shader Lab">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#5CE1E6" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#1a3a40" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#071018"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="#071018"/>
+  <rect width="640" height="360" fill="url(#g)"/>
+  <circle cx="320" cy="168" r="78" fill="none" stroke="#C8F542" stroke-width="3" opacity="0.9"/>
+  <circle cx="320" cy="168" r="42" fill="none" stroke="#5CE1E6" stroke-width="2" opacity="0.7"/>
+  <text x="48" y="304" fill="#E8F0E6" font-family="Arial Black, sans-serif" font-size="42" letter-spacing="4">SHADER LAB</text>
+</svg>

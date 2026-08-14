@@ -117,6 +117,17 @@ export const projects: Project[] = [
     tier: "other",
   },
   {
+    id: "08b",
+    title: "Shader Lab",
+    tagline: "点开即玩的片元着色器实验台：拖鼠标改场，三组 sketch 学 GLSL。",
+    stack: ["Three.js", "GLSL", "Vite"],
+    repo: "https://github.com/Hawk327ml/Hawk327ml.github.io",
+    live: "/lab/",
+    accent: "#C8F542",
+    image: "/thumbs/shader-lab.svg",
+    tier: "other",
+  },
+  {
     id: "09",
     title: "Tempe Crash EDA",
     tagline: "Tempe 公开事故数据：5.6 万行清洗 + 时段/严重度洞察（非因果）。",

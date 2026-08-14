@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = dirname(fileURLToPath(import.meta.url));
 
 const assistDocs = ["DESIGN.md", "SPEC.md", "GATE.md", "README.md"] as const;
+const labDocs = ["DESIGN.md", "GATE.md"] as const;
 
 export default defineConfig({
   base: "/",
@@ -15,25 +16,43 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           const url = req.url?.split("?")[0] ?? "";
-          const match = assistDocs.find((doc) => url === `/assist/${doc}`);
-          if (!match) {
-            next();
-            return;
+          const assistMatch = assistDocs.find((doc) => url === `/assist/${doc}`);
+          if (assistMatch) {
+            try {
+              const body = readFileSync(resolve(root, "assist", assistMatch), "utf8");
+              res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+              res.end(body);
+              return;
+            } catch {
+              next();
+              return;
+            }
           }
-          try {
-            const body = readFileSync(resolve(root, "assist", match), "utf8");
-            res.setHeader("Content-Type", "text/markdown; charset=utf-8");
-            res.end(body);
-          } catch {
-            next();
+          const labMatch = labDocs.find((doc) => url === `/lab/${doc}`);
+          if (labMatch) {
+            try {
+              const body = readFileSync(resolve(root, "lab", labMatch), "utf8");
+              res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+              res.end(body);
+              return;
+            } catch {
+              next();
+              return;
+            }
           }
+          next();
         });
       },
       writeBundle() {
-        const outDir = resolve(root, "dist/assist");
-        mkdirSync(outDir, { recursive: true });
+        const assistOut = resolve(root, "dist/assist");
+        mkdirSync(assistOut, { recursive: true });
         for (const doc of assistDocs) {
-          copyFileSync(resolve(root, "assist", doc), resolve(outDir, doc));
+          copyFileSync(resolve(root, "assist", doc), resolve(assistOut, doc));
+        }
+        const labOut = resolve(root, "dist/lab");
+        mkdirSync(labOut, { recursive: true });
+        for (const doc of labDocs) {
+          copyFileSync(resolve(root, "lab", doc), resolve(labOut, doc));
         }
       },
     },
@@ -49,6 +68,7 @@ export default defineConfig({
         play: resolve(root, "play/index.html"),
         pulse: resolve(root, "pulse/index.html"),
         assist: resolve(root, "assist/index.html"),
+        lab: resolve(root, "lab/index.html"),
       },
     },
   },
