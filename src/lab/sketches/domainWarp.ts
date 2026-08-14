@@ -1,16 +1,13 @@
 /**
- * Sketch 3 — Domain Warp
- * 练什么：
- * - value noise + fbm
- * - domain warp：用噪声偏移采样坐标再画图案
- * - 层叠两三次 warp 出有机纹理（别一次叠十层）
+ * Sketch 3 — Domain Warp + Dig
+ * 成片记忆点：噪声场被指针掏空成深井；洞缘露出石灰描边。
  */
 import type { SketchDef } from "./common";
 
 export const domainWarp: SketchDef = {
   id: "domain-warp",
   label: "Domain Warp",
-  tip: "练什么：noise 偏移 uv（domain warp）；fbm 叠 2–3 层即可",
+  tip: "记忆点：噪声场被掏成深井；洞缘石灰描边跟着指针走",
   fragmentShader: /* glsl */ `
 precision highp float;
 
@@ -58,8 +55,13 @@ void main() {
   float motion = mix(1.0, 0.08, uReducedMotion);
   float t = uTime * 0.22 * motion;
 
-  // Domain warp: offset the domain with fbm, then sample again
-  vec2 q = p + pointer * 0.25;
+  vec2 delta = p - pointer;
+  float digDist = length(delta);
+  float digPull = smoothstep(0.5, 0.0, digDist);
+  vec2 digDir = delta / max(digDist, 1e-4);
+  vec2 dug = p + digDir * digPull * 0.26 * mix(1.0, 0.28, uReducedMotion);
+
+  vec2 q = dug;
   vec2 warp1 = vec2(
     fbm(q + vec2(0.0, t)),
     fbm(q + vec2(5.2, 1.3) - t)
@@ -73,15 +75,21 @@ void main() {
   float ridges = 1.0 - abs(2.0 * n - 1.0);
   float bands = smoothstep(0.35, 0.75, ridges);
 
-  vec3 deep = vec3(0.027, 0.063, 0.094);
-  vec3 mid = vec3(0.08, 0.18, 0.2);
+  float hole = smoothstep(0.19, 0.0, digDist);
+  float crater = smoothstep(0.016, 0.0, abs(digDist - 0.155));
+
+  vec3 deep = vec3(0.02, 0.05, 0.07);
+  vec3 mid = vec3(0.07, 0.16, 0.18);
+  vec3 voidCol = vec3(0.006, 0.01, 0.014);
   vec3 cyan = vec3(0.361, 0.882, 0.902);
   vec3 lime = vec3(0.784, 0.961, 0.259);
 
   vec3 col = mix(deep, mid, n);
   col = mix(col, cyan * 0.75, bands * 0.65);
-  col = mix(col, lime * 0.55, smoothstep(0.7, 0.95, ridges) * 0.45);
-  col += cyan * 0.04 * motion;
+  col = mix(col, lime * 0.55, smoothstep(0.7, 0.95, ridges) * 0.4);
+  col = mix(col, voidCol, hole * 0.94);
+  col = mix(col, lime, crater * 0.95);
+  col += cyan * crater * 0.3 * motion;
 
   gl_FragColor = vec4(col, 1.0);
 }

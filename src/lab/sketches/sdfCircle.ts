@@ -1,16 +1,13 @@
 /**
- * Sketch 2 — SDF Soft Circle
- * 练什么：
- * - SDF：length(p - c) - r
- * - soft edge / outline 用 smoothstep
- * - 指针控制圆心，感受「场」而不是贴图
+ * Sketch 2 — SDF Soft Circle + Dig
+ * 成片记忆点：网格被指针掏成弹坑；SDF 圆钉在洞缘当「井口」。
  */
 import type { SketchDef } from "./common";
 
 export const sdfCircle: SketchDef = {
   id: "sdf-circle",
   label: "SDF Circle",
-  tip: "练什么：SDF = length(p-c)-r；描边用 abs(d) + smoothstep",
+  tip: "记忆点：网格被挖成弹坑；SDF 圆钉在洞缘当井口",
   fragmentShader: /* glsl */ `
 precision highp float;
 
@@ -31,33 +28,37 @@ void main() {
   vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
   vec2 pointer = (uPointer - 0.5) * vec2(aspect, 1.0);
 
-  float motion = mix(1.0, 0.12, uReducedMotion);
-  float radius = 0.22 + 0.03 * sin(uTime * 1.2 * motion);
-  vec2 center = pointer * 0.85;
+  float motion = mix(1.0, 0.1, uReducedMotion);
 
-  float d = sdCircle(p - center, radius);
+  vec2 delta = p - pointer;
+  float digDist = length(delta);
+  float digPull = smoothstep(0.55, 0.0, digDist);
+  vec2 digDir = delta / max(digDist, 1e-4);
+  // Warp the sampling space into a crater bowl
+  vec2 q = p + digDir * digPull * 0.28 * mix(1.0, 0.3, uReducedMotion);
+
+  float radius = 0.16 + 0.025 * sin(uTime * 1.15 * motion);
+  float d = sdCircle(q - pointer, radius);
   float fill = 1.0 - smoothstep(0.0, 0.012, d);
-  float stroke = 1.0 - smoothstep(0.0, 0.01, abs(d) - 0.008);
-  float halo = exp(-8.0 * abs(d)) * 0.35;
+  float stroke = 1.0 - smoothstep(0.0, 0.009, abs(d) - 0.006);
+  float hole = smoothstep(0.18, 0.0, digDist);
+  float crater = smoothstep(0.018, 0.0, abs(digDist - 0.17));
 
-  // Nested ring for readable SDF layers
-  float d2 = sdCircle(p - center, radius * 0.55);
-  float inner = 1.0 - smoothstep(0.0, 0.008, abs(d2));
+  vec2 g = abs(fract((q + pointer * 0.15) * 7.0) - 0.5);
+  float grid = 1.0 - smoothstep(0.018, 0.028, min(g.x, g.y));
 
-  vec3 deep = vec3(0.027, 0.063, 0.094);
-  vec3 field = vec3(0.05, 0.12, 0.14);
+  vec3 deep = vec3(0.02, 0.05, 0.07);
+  vec3 field = vec3(0.05, 0.11, 0.13);
+  vec3 voidCol = vec3(0.008, 0.012, 0.018);
   vec3 cyan = vec3(0.361, 0.882, 0.902);
   vec3 lime = vec3(0.784, 0.961, 0.259);
 
-  // Subtle grid so the signed field feels spatial
-  vec2 g = abs(fract(p * 6.0) - 0.5);
-  float grid = 1.0 - smoothstep(0.02, 0.03, min(g.x, g.y));
-
-  vec3 col = mix(deep, field, 0.55 + 0.2 * grid);
-  col = mix(col, cyan * 0.55, fill * 0.55);
+  vec3 col = mix(deep, field, 0.45 + 0.35 * grid);
+  col = mix(col, cyan * 0.5, fill * 0.45);
   col = mix(col, lime, stroke * 0.95);
-  col = mix(col, cyan, inner * 0.7);
-  col += cyan * halo * motion;
+  col = mix(col, voidCol, hole * 0.9);
+  col = mix(col, lime, crater * 0.9);
+  col += cyan * crater * 0.25 * motion;
 
   gl_FragColor = vec4(col, 1.0);
 }

@@ -2,13 +2,13 @@
 
 ## Positioning
 
-**One-liner:** 点开即玩的片元着色器实验台——拖鼠标改场，切换 sketch 学 GLSL。
+**One-liner:** 拖鼠标挖洞改场的片元着色器实验台。
 
-**5 秒认知:** 全屏在动；标题是 SHADER LAB；下面三个按钮能换效果。
+**5 秒认知:** 指针所到之处出现深井与洞缘；切换 sketch 洞还在。
 
 ## Visual motif
 
-暗底酸青场（与 HAWK 作品集一致）。
+暗底酸青场 + **挖洞井口（void + lime rim）** 为唯一记忆点。
 
 | Token | Value |
 |-------|-------|

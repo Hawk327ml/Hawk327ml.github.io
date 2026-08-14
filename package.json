@@ -11,7 +11,8 @@
     "capture:pulse-cover": "node scripts/capture-pulse-cover.mjs",
     "capture:assist-cover": "node scripts/capture-assist-cover.mjs",
     "capture:aapl-cover": "node scripts/capture-aapl-cover.mjs",
-    "capture:portal-cover": "node scripts/capture-portal-cover.mjs"
+    "capture:portal-cover": "node scripts/capture-portal-cover.mjs",
+    "capture:lab-cover": "node scripts/capture-lab-cover.mjs"
   },
   "devDependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",

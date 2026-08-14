@@ -93,7 +93,9 @@ button {
   font-size: clamp(2.8rem, 10vw, 5.2rem);
   letter-spacing: 0.08em;
   line-height: 0.95;
-  text-shadow: 0 0 40px rgba(7, 16, 24, 0.75);
+  text-shadow:
+    0 0 28px rgba(7, 16, 24, 0.9),
+    0 2px 18px rgba(7, 16, 24, 0.85);
 }
 
 .copy {
@@ -101,7 +103,7 @@ button {
   color: var(--ink);
   font-size: clamp(0.95rem, 2.2vw, 1.05rem);
   line-height: 1.45;
-  text-shadow: 0 1px 12px rgba(7, 16, 24, 0.9);
+  text-shadow: 0 1px 14px rgba(7, 16, 24, 0.95);
 }
 
 .sketches {
@@ -114,13 +116,13 @@ button {
 
 .sketch-btn {
   border: 1px solid var(--line);
-  background: rgba(7, 16, 24, 0.55);
+  background: rgba(7, 16, 24, 0.62);
   color: var(--muted);
   padding: 0.45rem 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .sketch-btn:hover {

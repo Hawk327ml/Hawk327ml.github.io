@@ -86,7 +86,7 @@ const start = performance.now();
 
 function frame(now: number) {
   const t = (now - start) / 1000;
-  const ease = motionQuery.matches ? 1 : 0.12;
+  const ease = motionQuery.matches ? 1 : 0.18;
   pointer.x += (pointer.targetX - pointer.x) * ease;
   pointer.y += (pointer.targetY - pointer.y) * ease;
   scene.setPointer(pointer.x, pointer.y);
